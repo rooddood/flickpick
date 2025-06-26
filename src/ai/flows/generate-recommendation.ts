@@ -21,6 +21,7 @@ export type GenerateRecommendationInput = z.infer<typeof GenerateRecommendationI
 
 const SingleRecommendationSchema = z.object({
   title: z.string().describe('The title of the recommended movie or TV show.'),
+  themes: z.array(z.string()).describe('A list of 2-3 main themes or keywords for the movie/TV show, like "dystopian", "coming-of-age", or "heist".'),
   description: z.string().describe('A brief description of the recommended movie or TV show.'),
   streamingAvailability: z.string().describe('Where the movie/TV show is available for streaming.'),
 });
@@ -45,7 +46,7 @@ const generateRecommendationPrompt = ai.definePrompt({
   Desired vibe: {{{vibe}}}
   Movie/TV show data: {{{movieData}}}
 
-  Each recommendation in the list should include the title, description, and streaming availability.
+  Each recommendation in the list should include the title, a list of 2-3 main themes, a description, and streaming availability.
   Make sure the output is a properly formatted array of 5 recommendations.
   `, 
 });
