@@ -5,19 +5,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Send } from "lucide-react";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState, useCallback } from "react";
 import { ChatMessage, type Message } from "./chat-message";
 
 type ChatInterfaceProps = {
   getAiRecommendation: (vibe: string) => Promise<RecommendationResult>;
+  onNewSearch?: (vibe: string) => void;
+  searchTrigger?: { term: string, id: number } | null;
 };
 
-export function ChatInterface({ getAiRecommendation }: ChatInterfaceProps) {
+export function ChatInterface({ getAiRecommendation, onNewSearch, searchTrigger }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: crypto.randomUUID(),
       role: "bot",
-      content: "What kind of movie or TV show are you in the mood for tonight?",
+      content: "What kind of movie or TV show are you in the mood for tonight? You can also pick from suggestions on the left.",
     },
   ]);
   const [input, setInput] = useState("");
@@ -31,20 +33,20 @@ export function ChatInterface({ getAiRecommendation }: ChatInterfaceProps) {
       behavior: "smooth",
     });
   }, [messages]);
+  
+  const performSearch = useCallback(async (searchTerm: string) => {
+    if (!searchTerm.trim() || isLoading) return;
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() || isLoading) return;
+    onNewSearch?.(searchTerm);
 
-    const currentInput = input;
-    const userInput: Message = { id: crypto.randomUUID(), role: "user", content: currentInput };
+    const userInput: Message = { id: crypto.randomUUID(), role: "user", content: searchTerm };
     const loadingMessage: Message = { id: crypto.randomUUID(), role: 'bot', content: <div className="flex justify-center items-center p-2"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div> };
 
     setMessages((prev) => [...prev, userInput, loadingMessage]);
     setInput("");
     setIsLoading(true);
 
-    const result = await getAiRecommendation(currentInput);
+    const result = await getAiRecommendation(searchTerm);
     
     setIsLoading(false);
 
@@ -66,6 +68,21 @@ export function ChatInterface({ getAiRecommendation }: ChatInterfaceProps) {
         });
         setMessages(prev => prev.slice(0, -1));
     }
+  }, [getAiRecommendation, isLoading, onNewSearch, toast]);
+
+
+  useEffect(() => {
+    if (searchTrigger) {
+      setMessages(prev => prev.slice(0, 1));
+      performSearch(searchTrigger.term);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchTrigger]);
+
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    performSearch(input);
   };
 
   return (
