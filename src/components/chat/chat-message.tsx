@@ -5,6 +5,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
 import { Bot, Clapperboard, Tv2, User } from "lucide-react";
 import Image from "next/image";
@@ -83,9 +84,24 @@ export function ChatMessage({ message }: { message: Message }) {
         {isRecommendationList ? (
           <div className="flex flex-col gap-3">
              <p className="text-muted-foreground mb-1">Here are a few ideas for you:</p>
-            {(message.content as GenerateRecommendationOutput).map((rec, index) => (
-              <RecommendationCard key={index} recommendation={rec} />
-            ))}
+            <Carousel
+              opts={{
+                align: "start",
+              }}
+              className="w-full"
+            >
+              <CarouselContent>
+                {(message.content as GenerateRecommendationOutput).map((rec, index) => (
+                  <CarouselItem key={index} className="basis-full md:basis-1/2">
+                    <div className="p-1">
+                      <RecommendationCard recommendation={rec} />
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="left-2" />
+              <CarouselNext className="right-2" />
+            </Carousel>
           </div>
         ) : (
           <div className="text-inherit whitespace-pre-wrap">{message.content}</div>
