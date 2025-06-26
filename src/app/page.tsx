@@ -56,6 +56,7 @@ export default function Home() {
             "a mind-bending sci-fi movie",
             "a heartwarming family comedy",
             "a documentary about space",
+            "a tense courtroom drama",
         ]);
     }
   }, [history]);
