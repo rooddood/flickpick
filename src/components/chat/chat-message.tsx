@@ -5,9 +5,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
-import { Bot, Clapperboard, Tv2, User } from "lucide-react";
+import { Bot, Tv2, User } from "lucide-react";
 import Image from "next/image";
 
 export type Message = {
@@ -22,25 +21,25 @@ const RecommendationCard = ({ recommendation }: { recommendation: SingleRecommen
   <Accordion type="single" collapsible className="w-full">
     <AccordionItem value="item-1" className="border-b-0">
       <Card className="bg-card border shadow-sm text-card-foreground overflow-hidden">
-        <AccordionTrigger className="p-4 text-left w-full hover:no-underline [&>svg]:ml-4">
-          <div className="flex items-start gap-4 w-full">
+        <AccordionTrigger className="p-2 text-left w-full hover:no-underline [&>svg]:ml-2">
+          <div className="flex items-start gap-2 w-full">
             <div className="flex-shrink-0">
               <Image
                 data-ai-hint="movie poster"
-                src={`https://placehold.co/80x120.png`}
+                src={`https://placehold.co/60x90.png`}
                 alt={`Poster for ${recommendation.title}`}
-                width={80}
-                height={120}
+                width={60}
+                height={90}
                 className="rounded-md object-cover"
               />
             </div>
             <div className="flex-1 text-left">
-              <h3 className="font-headline text-accent text-lg font-semibold flex items-center gap-2">
-                <Clapperboard className="h-5 w-5" /> {recommendation.title}
+              <h3 className="font-headline text-accent text-base font-semibold">
+                {recommendation.title}
               </h3>
               <div className="flex flex-wrap gap-1.5 mt-2">
                 {recommendation.themes?.map((theme, i) => (
-                  <Badge key={i} variant="secondary" className="font-normal capitalize">
+                  <Badge key={i} variant="secondary" className="font-normal capitalize text-xs px-1.5 py-0.5">
                     {theme}
                   </Badge>
                 ))}
@@ -48,11 +47,11 @@ const RecommendationCard = ({ recommendation }: { recommendation: SingleRecommen
             </div>
           </div>
         </AccordionTrigger>
-        <AccordionContent className="px-4 pb-4">
-          <div className="border-t pt-4">
-            <p className="text-foreground/80 text-sm mb-4">{recommendation.description}</p>
+        <AccordionContent className="px-2 pb-2">
+          <div className="border-t pt-2">
+            <p className="text-foreground/80 text-sm mb-2">{recommendation.description}</p>
             <div className="flex items-center gap-2 text-sm text-muted-foreground font-headline">
-              <Tv2 className="h-5 w-5 text-accent" />
+              <Tv2 className="h-4 w-4 text-accent" />
               <span>Available on: <strong>{recommendation.streamingAvailability}</strong></span>
             </div>
           </div>
@@ -84,24 +83,11 @@ export function ChatMessage({ message }: { message: Message }) {
         {isRecommendationList ? (
           <div className="flex flex-col gap-3">
              <p className="text-muted-foreground mb-1">Here are a few ideas for you:</p>
-            <Carousel
-              opts={{
-                align: "start",
-              }}
-              className="w-full"
-            >
-              <CarouselContent>
+            <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-3">
                 {(message.content as GenerateRecommendationOutput).map((rec, index) => (
-                  <CarouselItem key={index} className="basis-full md:basis-1/2">
-                    <div className="p-1">
-                      <RecommendationCard recommendation={rec} />
-                    </div>
-                  </CarouselItem>
+                  <RecommendationCard key={index} recommendation={rec} />
                 ))}
-              </CarouselContent>
-              <CarouselPrevious className="left-2" />
-              <CarouselNext className="right-2" />
-            </Carousel>
+            </div>
           </div>
         ) : (
           <div className="text-inherit whitespace-pre-wrap">{message.content}</div>

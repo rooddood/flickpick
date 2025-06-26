@@ -37,10 +37,17 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    // Generate suggestions from history
+    const defaultSuggestions = [
+        "classic film noir",
+        "mind-bending sci-fi",
+        "family comedy",
+        "space documentary",
+        "tense courtroom drama",
+    ];
+
     if (history.length > 0) {
       const uniqueWords = new Set<string>();
-      const stopWords = new Set(['a', 'an', 'the', 'movie', 'about', 'with', 'that', 'show', 'for', 'is', 'in']);
+      const stopWords = new Set(['a', 'an', 'the', 'movie', 'about', 'with', 'that', 'show', 'for', 'is', 'in', 'and', 'tv']);
       history.forEach(item => {
         item.split(' ').forEach(word => {
           const cleanWord = word.replace(/[^a-zA-Z]/g, '').toLowerCase();
@@ -49,16 +56,18 @@ export default function Home() {
           }
         });
       });
+      
       const shuffled = Array.from(uniqueWords).sort(() => 0.5 - Math.random());
-      setSuggestions(shuffled.slice(0, 5));
+      const newSuggestions = shuffled.slice(0, 5);
+
+      if (newSuggestions.length > 0) {
+        setSuggestions(newSuggestions);
+      } else {
+        // As a fallback, show shuffled default suggestions so the list doesn't disappear
+        setSuggestions(defaultSuggestions.sort(() => 0.5 - Math.random()).slice(0, 5));
+      }
     } else {
-        setSuggestions([
-            "classic film noir",
-            "mind-bending sci-fi",
-            "family comedy",
-            "space documentary",
-            "tense courtroom drama",
-        ]);
+        setSuggestions(defaultSuggestions);
     }
   }, [history]);
 
