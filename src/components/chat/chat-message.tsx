@@ -13,9 +13,11 @@ export type Message = {
   content: React.ReactNode | GenerateRecommendationOutput;
 };
 
-const RecommendationCard = ({ recommendation }: { recommendation: GenerateRecommendationOutput }) => (
-  <Card className="bg-transparent border-0 shadow-none text-card-foreground">
-    <CardHeader className="p-0">
+type SingleRecommendation = GenerateRecommendationOutput[0];
+
+const RecommendationCard = ({ recommendation }: { recommendation: SingleRecommendation }) => (
+  <Card className="bg-card border shadow-sm text-card-foreground">
+    <CardHeader className="p-4">
       <div className="flex flex-col sm:flex-row items-start gap-4">
         <div className="flex-shrink-0">
           <Image
@@ -37,7 +39,7 @@ const RecommendationCard = ({ recommendation }: { recommendation: GenerateRecomm
         </div>
       </div>
     </CardHeader>
-    <CardContent className="p-0 mt-4">
+    <CardContent className="p-4 pt-0">
       <div className="flex items-center gap-2 text-sm text-muted-foreground font-headline">
         <Tv2 className="h-5 w-5 text-accent" />
         <span>Available on: <strong>{recommendation.streamingAvailability}</strong></span>
@@ -48,7 +50,7 @@ const RecommendationCard = ({ recommendation }: { recommendation: GenerateRecomm
 
 export function ChatMessage({ message }: { message: Message }) {
   const isBot = message.role === "bot";
-  const isRecommendation = isBot && typeof message.content === 'object' && message.content && 'title' in (message.content as any);
+  const isRecommendationList = isBot && Array.isArray(message.content);
 
   return (
     <div className={cn("flex items-start gap-3", isBot ? "justify-start" : "justify-end")}>
@@ -61,12 +63,17 @@ export function ChatMessage({ message }: { message: Message }) {
       )}
       <div
         className={cn(
-          "max-w-md rounded-lg px-4 py-3",
-          isBot ? (isRecommendation ? 'p-0 bg-transparent' : 'bg-muted') : "bg-primary text-primary-foreground"
+          "max-w-xl rounded-lg",
+          isBot ? (isRecommendationList ? 'bg-transparent' : 'bg-muted px-4 py-3') : "bg-primary text-primary-foreground px-4 py-3"
         )}
       >
-        {isRecommendation ? (
-          <RecommendationCard recommendation={message.content as GenerateRecommendationOutput} />
+        {isRecommendationList ? (
+          <div className="flex flex-col gap-4">
+             <p className="text-muted-foreground mb-2">Here are a few ideas for you:</p>
+            {(message.content as GenerateRecommendationOutput).map((rec, index) => (
+              <RecommendationCard key={index} recommendation={rec} />
+            ))}
+          </div>
         ) : (
           <div className="text-inherit whitespace-pre-wrap">{message.content}</div>
         )}

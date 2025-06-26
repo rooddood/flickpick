@@ -19,11 +19,14 @@ const GenerateRecommendationInputSchema = z.object({
 
 export type GenerateRecommendationInput = z.infer<typeof GenerateRecommendationInputSchema>;
 
-const GenerateRecommendationOutputSchema = z.object({
+const SingleRecommendationSchema = z.object({
   title: z.string().describe('The title of the recommended movie or TV show.'),
   description: z.string().describe('A brief description of the recommended movie or TV show.'),
   streamingAvailability: z.string().describe('Where the movie/TV show is available for streaming.'),
 });
+
+const GenerateRecommendationOutputSchema = z.array(SingleRecommendationSchema).describe("A list of 5 movie or TV show recommendations.");
+
 
 export type GenerateRecommendationOutput = z.infer<typeof GenerateRecommendationOutputSchema>;
 
@@ -37,13 +40,13 @@ const generateRecommendationPrompt = ai.definePrompt({
   output: {schema: GenerateRecommendationOutputSchema},
   prompt: `You are a movie and TV show recommendation expert.
 
-  Based on the user's desired vibe and the movie/TV show data provided, generate a personalized recommendation.
+  Based on the user's desired vibe and the movie/TV show data provided, generate a list of 5 personalized recommendations.
 
   Desired vibe: {{{vibe}}}
   Movie/TV show data: {{{movieData}}}
 
-  Recommendation should include the title, description, and streaming availability.
-  Make sure the output is properly formatted.
+  Each recommendation in the list should include the title, description, and streaming availability.
+  Make sure the output is a properly formatted array of 5 recommendations.
   `, 
 });
 

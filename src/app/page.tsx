@@ -40,23 +40,24 @@ export default function Home() {
     // Generate suggestions from history
     if (history.length > 0) {
       const uniqueWords = new Set<string>();
+      const stopWords = new Set(['a', 'an', 'the', 'movie', 'about', 'with', 'that', 'show', 'for', 'is', 'in']);
       history.forEach(item => {
         item.split(' ').forEach(word => {
-          if (word.length > 3) {
-            const cleanWord = word.replace(/[^a-zA-Z]/g, '').toLowerCase();
-            if(cleanWord) uniqueWords.add(cleanWord);
+          const cleanWord = word.replace(/[^a-zA-Z]/g, '').toLowerCase();
+          if (cleanWord.length > 2 && !stopWords.has(cleanWord)) {
+            uniqueWords.add(cleanWord);
           }
         });
       });
       const shuffled = Array.from(uniqueWords).sort(() => 0.5 - Math.random());
-      setSuggestions(shuffled.slice(0, 5).map(word => `A movie about ${word}`));
+      setSuggestions(shuffled.slice(0, 5));
     } else {
         setSuggestions([
-            "a classic film noir",
-            "a mind-bending sci-fi movie",
-            "a heartwarming family comedy",
-            "a documentary about space",
-            "a tense courtroom drama",
+            "classic film noir",
+            "mind-bending sci-fi",
+            "family comedy",
+            "space documentary",
+            "tense courtroom drama",
         ]);
     }
   }, [history]);
@@ -90,7 +91,7 @@ export default function Home() {
             <SidebarMenu>
               {suggestions.map((item, index) => (
                 <SidebarMenuItem key={`sugg-${index}`}>
-                  <SidebarMenuButton onClick={() => handleHistoryClick(item)} className="w-full justify-start text-left h-auto p-2">
+                  <SidebarMenuButton onClick={() => handleHistoryClick(item)} className="w-full justify-start text-left h-auto p-2 capitalize">
                     {item}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
