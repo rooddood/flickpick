@@ -17,7 +17,7 @@ import {
 import { History, Lightbulb } from "lucide-react";
 import { useEffect, useState, useMemo } from "react";
 
-const MAX_HISTORY_LENGTH = 10;
+const MAX_HISTORY_LENGTH = 5;
 const HISTORY_STORAGE_KEY = "streamwise_history";
 const THEMES_STORAGE_KEY = "streamwise_themes";
 const MAX_SUGGESTIONS = 20;
