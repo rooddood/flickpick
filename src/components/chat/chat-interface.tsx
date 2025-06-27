@@ -128,6 +128,16 @@ export function ChatInterface({ getAiRecommendation, onNewSearch, searchTrigger 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTrigger]);
 
+  const handleThemeClick = useCallback((theme: string) => {
+    setInput((prevInput) => {
+      const trimmedInput = prevInput.trim();
+      const existingThemes = trimmedInput.split(' ').filter(Boolean);
+      if (existingThemes.some(t => t.toLowerCase() === theme.toLowerCase())) {
+        return trimmedInput;
+      }
+      return trimmedInput ? `${trimmedInput} ${theme}` : theme;
+    });
+  }, []);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -145,6 +155,7 @@ export function ChatInterface({ getAiRecommendation, onNewSearch, searchTrigger 
             onMoreLikeThis={performSearch}
             getMoreInfoAction={getMoreMovieInfo}
             onNewResults={handleGenerateNewResults}
+            onThemeClick={handleThemeClick}
           />
         ))}
       </div>

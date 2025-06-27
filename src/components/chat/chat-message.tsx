@@ -37,9 +37,10 @@ type RecommendationItemProps = {
   recommendation: SingleRecommendation;
   onMoreLikeThis: (searchTerm: string) => void;
   getMoreInfoAction: (input: GetMoreInfoInput) => Promise<MoreInfoResult>;
+  onThemeClick: (theme: string) => void;
 };
 
-const RecommendationItem = ({ recommendation, onMoreLikeThis, getMoreInfoAction }: RecommendationItemProps) => {
+const RecommendationItem = ({ recommendation, onMoreLikeThis, getMoreInfoAction, onThemeClick }: RecommendationItemProps) => {
   const [moreInfo, setMoreInfo] = useState<MoreInfoResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -117,9 +118,18 @@ const RecommendationItem = ({ recommendation, onMoreLikeThis, getMoreInfoAction 
           <div className="mt-1.5 flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5">
             <div className="flex flex-wrap gap-1.5">
               {recommendation.themes?.map((theme, i) => (
-                <Badge key={i} variant="secondary" className="capitalize">
-                  {theme}
-                </Badge>
+                <button
+                  key={i}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onThemeClick(theme);
+                  }}
+                  className="appearance-none p-0 border-0 bg-transparent rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1"
+                >
+                  <Badge variant="secondary" className="capitalize cursor-pointer hover:bg-primary/20 transition-colors">
+                    {theme}
+                  </Badge>
+                </button>
               ))}
             </div>
             <StreamingInfo />
@@ -170,10 +180,11 @@ type ChatMessageProps = {
   isGenerating?: boolean;
   onMoreLikeThis: (searchTerm: string) => void;
   getMoreInfoAction: (input: GetMoreInfoInput) => Promise<MoreInfoResult>;
+  onThemeClick: (theme: string) => void;
   onNewResults?: () => void;
 };
 
-export function ChatMessage({ message, isGenerating, onMoreLikeThis, getMoreInfoAction, onNewResults }: ChatMessageProps) {
+export function ChatMessage({ message, isGenerating, onMoreLikeThis, getMoreInfoAction, onNewResults, onThemeClick }: ChatMessageProps) {
   const isBot = message.role === "bot";
   const isRecommendationList = isBot && Array.isArray(message.content);
 
@@ -191,6 +202,7 @@ export function ChatMessage({ message, isGenerating, onMoreLikeThis, getMoreInfo
                   recommendation={rec}
                   onMoreLikeThis={onMoreLikeThis}
                   getMoreInfoAction={getMoreInfoAction}
+                  onThemeClick={onThemeClick}
                 />
               ))}
             </div>
