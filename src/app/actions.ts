@@ -1,7 +1,6 @@
 'use server';
 
 import { generateRecommendation, GenerateRecommendationOutput } from '@/ai/flows/generate-recommendation';
-import { retrieveRecommendations } from '@/ai/flows/retrieve-recommendations';
 
 export type RecommendationResult = GenerateRecommendationOutput | { error: string };
 
@@ -11,14 +10,7 @@ export async function getAiRecommendation(vibe: string): Promise<RecommendationR
   }
 
   try {
-    const retrieveResult = await retrieveRecommendations({ preferences: vibe });
-    const movieData = retrieveResult.recommendation;
-
-    if (!movieData) {
-      return { error: "I couldn't find any movies or shows that match that vibe. Please try something else!" };
-    }
-    
-    const recommendation = await generateRecommendation({ vibe, movieData });
+    const recommendation = await generateRecommendation({ vibe });
     
     return recommendation;
   } catch (error) {
