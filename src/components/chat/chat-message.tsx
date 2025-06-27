@@ -43,12 +43,7 @@ const RecommendationItem = ({ recommendation }: { recommendation: SingleRecommen
     const siteUrl = siteKey ? STREAMING_SITES[siteKey] : null;
 
     const content = (
-      <>
-        Available on:{" "}
-        <span className="font-normal text-muted-foreground">
-          {recommendation.streamingAvailability}
-        </span>
-      </>
+      <>{recommendation.streamingAvailability}</>
     );
 
     if (siteUrl) {
@@ -57,14 +52,14 @@ const RecommendationItem = ({ recommendation }: { recommendation: SingleRecommen
           href={siteUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm font-medium hover:underline"
+          className="text-sm text-muted-foreground hover:underline shrink-0"
         >
           {content}
         </a>
       );
     }
 
-    return <p className="text-sm font-medium">{content}</p>;
+    return <p className="text-sm text-muted-foreground shrink-0">{content}</p>;
   };
   
   return (
@@ -83,12 +78,15 @@ const RecommendationItem = ({ recommendation }: { recommendation: SingleRecommen
               </Badge>
             )}
           </div>
-          <div className="mt-1.5 flex flex-wrap gap-1.5">
-            {recommendation.themes?.map((theme, i) => (
-              <Badge key={i} variant="secondary" className="capitalize">
-                {theme}
-              </Badge>
-            ))}
+          <div className="mt-1.5 flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5">
+            <div className="flex flex-wrap gap-1.5">
+              {recommendation.themes?.map((theme, i) => (
+                <Badge key={i} variant="secondary" className="capitalize">
+                  {theme}
+                </Badge>
+              ))}
+            </div>
+            <StreamingInfo />
           </div>
         </div>
         <ChevronRight className="h-5 w-5 shrink-0 transition-transform" />
@@ -107,7 +105,6 @@ const RecommendationItem = ({ recommendation }: { recommendation: SingleRecommen
                 Starring: <span className="font-normal text-muted-foreground">{recommendation.mainActors.join(', ')}</span>
               </p>
             )}
-            <StreamingInfo />
           </div>
         </div>
       </CollapsibleContent>
