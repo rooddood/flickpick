@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
-import { Bot, ChevronRight, ExternalLink, Tv2, User } from "lucide-react";
+import { Bot, ChevronRight, Film, Tv2, User } from "lucide-react";
 import React from "react";
 
 export type Message = {
@@ -23,16 +23,15 @@ const RecommendationItem = ({ recommendation }: { recommendation: SingleRecommen
   >
     <CollapsibleTrigger className="flex w-full items-center justify-between p-2 text-left transition-colors hover:bg-muted/50 [&[data-state=open]>svg]:rotate-90">
       <div className="flex-1 pr-4">
-        <a 
-          href={`https://www.imdb.com/title/${recommendation.imdbId}/`}
-          target="_blank" 
-          rel="noopener noreferrer" 
-          className="inline-flex items-center gap-2 hover:underline"
-          onClick={(e) => e.stopPropagation()}
-        >
+        <div className="flex items-center gap-3">
           <h3 className="font-headline text-lg font-semibold">{recommendation.title}</h3>
-          <ExternalLink className="h-4 w-4 shrink-0 text-muted-foreground" />
-        </a>
+          {recommendation.type && (
+            <Badge variant="outline" className="shrink-0 flex items-center gap-1 font-normal">
+              {recommendation.type === 'Movie' ? <Film className="h-3.5 w-3.5" /> : <Tv2 className="h-3.5 w-3.5" />}
+              {recommendation.type}
+            </Badge>
+          )}
+        </div>
         <div className="mt-1.5 flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5">
           <div className="flex flex-wrap gap-1.5">
             {recommendation.themes?.map((theme, i) => (

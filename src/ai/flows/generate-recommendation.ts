@@ -20,12 +20,12 @@ export type GenerateRecommendationInput = z.infer<typeof GenerateRecommendationI
 
 const SingleRecommendationSchema = z.object({
   title: z.string().describe('The title of the recommended movie or TV show.'),
+  type: z.enum(['Movie', 'TV Show']).describe('Whether the recommendation is a "Movie" or a "TV Show".'),
   themes: z.array(z.string()).describe('A list of 2-3 main themes or keywords for the movie/TV show. These should be concise phrases like "sci-fi heist" or "dark comedy", not sentences.'),
   description: z.string().describe('A brief, one-sentence description of the recommended movie or TV show.'),
   streamingAvailability: z.string().describe('Where the movie/TV show can be watched. Specify if it is available for streaming (e.g., "Stream on Netflix"), or if it needs to be rented or purchased (e.g., "Rent/Buy on Amazon Prime"). If unknown, state "Not specified".'),
   themeColor: z.string().describe('A theme color in HSL format (e.g., "220 80% 50%") that represents the mood of the movie.'),
   mainActors: z.array(z.string()).describe('A list of 2-3 main actors in the movie/TV show.'),
-  imdbId: z.string().describe('The IMDb Title ID for the movie or TV show (e.g., "tt1375666" for Inception).'),
 });
 
 const GenerateRecommendationOutputSchema = z.array(SingleRecommendationSchema).max(6).describe("A list of up to 6 movie or TV show recommendations based on the user's vibe.");
@@ -47,13 +47,13 @@ const generateRecommendationPrompt = ai.definePrompt({
 
   For each recommendation, you MUST provide:
   - A title.
+  - The type of content: either "Movie" or "TV Show".
   - A list of 2-3 short, descriptive themes (e.g., "dystopian sci-fi", "courtroom drama").
   - A concise, one-sentence description.
   - Where the movie/TV show can be watched. Specify if it is available for streaming (e.g., "Stream on Netflix"), or if it needs to be rented or purchased (e.g., "Rent/Buy on Amazon Prime"). Use your training data to provide a likely source. If you cannot determine one, use "Not specified".
   - A representative theme color in HSL format (e.g., "30 95% 50%").
   - A list of 2-3 main actors.
-  - The IMDb Title ID (e.g., "tt1375666" for Inception).
-
+  
   Generate exactly 6 recommendations based on your general training data.
   `, 
 });
