@@ -22,9 +22,17 @@ const HISTORY_STORAGE_KEY = "streamwise_history";
 const THEMES_STORAGE_KEY = "streamwise_themes";
 const MAX_SUGGESTIONS = 20;
 
+const defaultSuggestions = [
+  "classic film noir",
+  "mind-bending sci-fi",
+  "family comedy",
+  "space documentary",
+  "tense courtroom drama",
+];
+
 export default function Home() {
   const [history, setHistory] = useState<string[]>([]);
-  const [allSuggestions, setAllSuggestions] = useState<string[]>([]);
+  const [allSuggestions, setAllSuggestions] = useState<string[]>(defaultSuggestions);
   const [searchTrigger, setSearchTrigger] = useState<{ term: string, id: number } | null>(null);
 
   useEffect(() => {
@@ -35,16 +43,11 @@ export default function Home() {
       }
       
       const storedThemes = localStorage.getItem(THEMES_STORAGE_KEY);
-      if (storedThemes && JSON.parse(storedThemes).length > 0) {
-        setAllSuggestions(JSON.parse(storedThemes));
-      } else {
-        setAllSuggestions([
-          "classic film noir",
-          "mind-bending sci-fi",
-          "family comedy",
-          "space documentary",
-          "tense courtroom drama",
-        ]);
+      if (storedThemes) {
+        const parsedThemes = JSON.parse(storedThemes);
+        if (Array.isArray(parsedThemes) && parsedThemes.length > 0) {
+          setAllSuggestions(parsedThemes);
+        }
       }
     } catch (error) {
       console.error("Failed to load data from localStorage", error);
@@ -68,8 +71,8 @@ export default function Home() {
     if (themes.length > 0) {
       setAllSuggestions((prevSuggestions) => {
         const combined = [...themes, ...prevSuggestions];
-        const unique = [...new Set(combined.map(s => s.toLowerCase()))];
-        const newSuggestions = unique.slice(0, MAX_SUGGESTIONS);
+        const uniqueThemes = [...new Set(combined.map(s => s.toLowerCase()))];
+        const newSuggestions = uniqueThemes.slice(0, MAX_SUGGESTIONS);
         try {
           localStorage.setItem(THEMES_STORAGE_KEY, JSON.stringify(newSuggestions));
         } catch (error) {
