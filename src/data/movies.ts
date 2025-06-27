@@ -5,6 +5,7 @@ export type Movie = {
   themes: string[];
   streamingAvailability: string;
   themeColor: string;
+  mainActors: string[];
 };
 
 export const movies: Movie[] = [
@@ -16,6 +17,7 @@ export const movies: Movie[] = [
     themes: ['sci-fi', 'heist', 'mind-bending'],
     streamingAvailability: 'Netflix',
     themeColor: '220 80% 50%',
+    mainActors: ['Leonardo DiCaprio', 'Joseph Gordon-Levitt', 'Elliot Page'],
   },
   {
     id: 2,
@@ -25,6 +27,7 @@ export const movies: Movie[] = [
     themes: ['sci-fi', 'action', 'dystopian'],
     streamingAvailability: 'HBO Max',
     themeColor: '140 80% 40%',
+    mainActors: ['Keanu Reeves', 'Laurence Fishburne', 'Carrie-Anne Moss'],
   },
   {
     id: 3,
@@ -34,6 +37,7 @@ export const movies: Movie[] = [
     themes: ['thriller', 'dark comedy', 'social commentary'],
     streamingAvailability: 'Hulu',
     themeColor: '120 5% 30%',
+    mainActors: ['Song Kang-ho', 'Lee Sun-kyun', 'Cho Yeo-jeong'],
   },
   {
     id: 4,
@@ -43,6 +47,7 @@ export const movies: Movie[] = [
     themes: ['crime', 'drama', 'mafia'],
     streamingAvailability: 'Paramount+',
     themeColor: '15 60% 35%',
+    mainActors: ['Marlon Brando', 'Al Pacino', 'James Caan'],
   },
   {
     id: 5,
@@ -52,6 +57,7 @@ export const movies: Movie[] = [
     themes: ['crime', 'nonlinear narrative', 'dark comedy'],
     streamingAvailability: 'HBO Max',
     themeColor: '350 80% 50%',
+    mainActors: ['John Travolta', 'Uma Thurman', 'Samuel L. Jackson'],
   },
   {
     id: 6,
@@ -61,6 +67,7 @@ export const movies: Movie[] = [
     themes: ['anime', 'fantasy', 'coming-of-age'],
     streamingAvailability: 'HBO Max',
     themeColor: '320 70% 60%',
+    mainActors: ['Rumi Hiiragi', 'Miyu Irino', 'Mari Natsuki'],
   },
   {
     id: 7,
@@ -70,6 +77,7 @@ export const movies: Movie[] = [
     themes: ['sci-fi', 'neo-noir', 'dystopian'],
     streamingAvailability: 'Netflix',
     themeColor: '25 90% 55%',
+    mainActors: ['Ryan Gosling', 'Harrison Ford', 'Ana de Armas'],
   },
   {
     id: 8,
@@ -79,6 +87,7 @@ export const movies: Movie[] = [
     themes: ['action', 'post-apocalyptic', 'high-octane'],
     streamingAvailability: 'HBO Max',
     themeColor: '30 95% 50%',
+    mainActors: ['Tom Hardy', 'Charlize Theron', 'Nicholas Hoult'],
   },
   {
     id: 9,
@@ -88,6 +97,7 @@ export const movies: Movie[] = [
     themes: ['mystery', 'whodunnit', 'comedy'],
     streamingAvailability: 'Amazon Prime',
     themeColor: '45 30% 50%',
+    mainActors: ['Daniel Craig', 'Chris Evans', 'Ana de Armas'],
   },
   {
     id: 10,
@@ -97,6 +107,7 @@ export const movies: Movie[] = [
     themes: ['animation', 'family', 'music'],
     streamingAvailability: 'Disney+',
     themeColor: '200 90% 60%',
+    mainActors: ['Anthony Gonzalez', 'Gael García Bernal', 'Benjamin Bratt'],
   },
   {
     id: 11,
@@ -106,6 +117,7 @@ export const movies: Movie[] = [
     themes: ['horror', 'thriller', 'social commentary'],
     streamingAvailability: 'Hulu',
     themeColor: '0 0% 10%',
+    mainActors: ['Daniel Kaluuya', 'Allison Williams', 'Bradley Whitford'],
   },
   {
     id: 12,
@@ -115,5 +127,6 @@ export const movies: Movie[] = [
     themes: ['sci-fi', 'action', 'absurdist comedy'],
     streamingAvailability: 'Showtime',
     themeColor: '0 0% 90%',
+    mainActors: ['Michelle Yeoh', 'Stephanie Hsu', 'Ke Huy Quan'],
   },
 ];

@@ -1,11 +1,11 @@
 "use client";
 
 import { GenerateRecommendationOutput } from "@/ai/flows/generate-recommendation";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
-import { Bot, Tv2, User } from "lucide-react";
+import { Bot, ChevronRight, Tv2, User } from "lucide-react";
 import React from "react";
 
 export type Message = {
@@ -16,39 +16,69 @@ export type Message = {
 
 type SingleRecommendation = GenerateRecommendationOutput[0];
 
-const RecommendationCard = ({ recommendation }: { recommendation: SingleRecommendation }) => (
-  <AccordionItem 
-    value={recommendation.title} 
-    className="border-b-0 bg-card rounded-lg shadow-sm border overflow-hidden"
+const RecommendationItem = ({ recommendation }: { recommendation: SingleRecommendation }) => (
+  <Collapsible
+    className="border-b"
     style={{ borderLeft: `4px solid hsl(${recommendation.themeColor})` }}
   >
-    <AccordionTrigger className="p-3 w-full text-left hover:no-underline [&>svg]:ml-auto">
-      <div className="flex flex-col w-full">
-        <h3 className="font-headline text-accent text-base font-semibold leading-tight">
-          {recommendation.title}
-        </h3>
-        <div className="flex flex-wrap gap-1.5 mt-2">
+    <CollapsibleTrigger className="flex w-full items-center justify-between p-3 text-left transition-colors hover:bg-muted/50 [&[data-state=open]>svg]:rotate-90">
+      <div className="flex-1 pr-4">
+        <h3 className="font-headline text-lg font-semibold">{recommendation.title}</h3>
+        <div className="mt-2 flex flex-wrap gap-1.5">
           {recommendation.themes?.map((theme, i) => (
-            <Badge key={i} variant="secondary" className="font-normal capitalize text-xs px-1.5 py-0.5">
+            <Badge key={i} variant="secondary" className="capitalize">
               {theme}
             </Badge>
           ))}
         </div>
+        <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
+          <Tv2 className="h-4 w-4 shrink-0" />
+          <span>Available on <strong>{recommendation.streamingAvailability}</strong></span>
+        </div>
       </div>
-    </AccordionTrigger>
-    <AccordionContent className="p-3 pt-2">
-      <p className="text-foreground/80 text-sm mb-3">{recommendation.description}</p>
-      <div className="flex items-center gap-2 text-sm text-muted-foreground font-headline pt-3 border-t">
-        <Tv2 className="h-4 w-4 text-accent" />
-        <span>Available on: <strong>{recommendation.streamingAvailability}</strong></span>
+      <ChevronRight className="h-5 w-5 shrink-0 transition-transform" />
+    </CollapsibleTrigger>
+    <CollapsibleContent className="px-3 pb-3">
+      <div className="border-t pt-3">
+        <p className="text-foreground/80 mb-3 text-sm">{recommendation.description}</p>
+        <p className="text-sm font-medium">
+          Starring: <span className="font-normal text-muted-foreground">{recommendation.mainActors.join(', ')}</span>
+        </p>
       </div>
-    </AccordionContent>
-  </AccordionItem>
+    </CollapsibleContent>
+  </Collapsible>
 );
+
 
 export function ChatMessage({ message }: { message: Message }) {
   const isBot = message.role === "bot";
   const isRecommendationList = isBot && Array.isArray(message.content);
+
+  const renderContent = () => {
+    if (isRecommendationList) {
+      const recommendations = message.content as GenerateRecommendationOutput;
+      if (recommendations.length > 0) {
+        return (
+          <div className="flex flex-col gap-3">
+            <p className="text-muted-foreground mb-1 px-1">Here are a few ideas for you:</p>
+            <div className="overflow-hidden rounded-lg border bg-card shadow-sm">
+              {recommendations.map((rec, index) => (
+                <RecommendationItem key={index} recommendation={rec} />
+              ))}
+            </div>
+          </div>
+        );
+      }
+      // Fallback for when the AI returns an empty list
+      return (
+        <div className="rounded-lg bg-muted px-4 py-3">
+          <p>I couldn't find any recommendations that fit that vibe. Could you try being a bit more descriptive or try a different search?</p>
+        </div>
+      );
+    }
+    // For regular text messages and loading indicators
+    return <div className="text-inherit whitespace-pre-wrap">{message.content}</div>;
+  };
 
   return (
     <div className={cn("flex items-start gap-3", isBot ? "justify-start" : "justify-end")}>
@@ -61,22 +91,11 @@ export function ChatMessage({ message }: { message: Message }) {
       )}
       <div
         className={cn(
-          "w-full rounded-lg",
+          "w-full max-w-2xl rounded-lg",
           isBot ? (isRecommendationList ? 'bg-transparent' : 'bg-muted px-4 py-3') : "bg-primary text-primary-foreground px-4 py-3"
         )}
       >
-        {isRecommendationList ? (
-          <div className="flex flex-col gap-3">
-            <p className="text-muted-foreground mb-1">Here are a few ideas for you (click to expand):</p>
-            <Accordion type="single" collapsible className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {(message.content as GenerateRecommendationOutput).map((rec, index) => (
-                  <RecommendationCard key={index} recommendation={rec} />
-                ))}
-            </Accordion>
-          </div>
-        ) : (
-          <div className="text-inherit whitespace-pre-wrap">{message.content}</div>
-        )}
+        {renderContent()}
       </div>
       {!isBot && (
         <Avatar className="h-8 w-8 shrink-0">

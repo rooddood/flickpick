@@ -28,6 +28,7 @@ const searchMovieDatabase = ai.defineTool(
       themes: z.array(z.string()),
       streamingAvailability: z.string(),
       themeColor: z.string(),
+      mainActors: z.array(z.string()),
     })),
   },
   async ({ query }) => {
@@ -48,6 +49,7 @@ const SingleRecommendationSchema = z.object({
   description: z.string().describe('A brief description of the recommended movie or TV show.'),
   streamingAvailability: z.string().describe('Where the movie/TV show is available for streaming.'),
   themeColor: z.string().describe('The HSL theme color for the movie card.'),
+  mainActors: z.array(z.string()).describe('A list of the main actors in the movie/TV show.'),
 });
 
 const GenerateRecommendationOutputSchema = z.array(SingleRecommendationSchema).max(6).describe("A list of up to 6 movie or TV show recommendations based on the tool's output.");
@@ -101,6 +103,7 @@ const generateRecommendationFlow = ai.defineFlow(
       themes: movie.themes,
       streamingAvailability: movie.streamingAvailability,
       themeColor: movie.themeColor,
+      mainActors: movie.mainActors,
     }));
   }
 );
