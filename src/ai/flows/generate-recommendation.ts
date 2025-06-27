@@ -48,11 +48,11 @@ const generateRecommendationPrompt = ai.definePrompt({
   - A title.
   - A list of 2-3 short, descriptive themes (e.g., "dystopian sci-fi", "courtroom drama").
   - A concise, one-sentence description.
-  - The streaming service where it's available (e.g., "Netflix", "Hulu"). If you don't know, say "Not specified".
+  - The streaming service where it is most likely available (e.g., "Netflix", "Hulu", "Disney+"). Use your training data to provide a likely streaming service. If you cannot determine one, use "Not specified".
   - A representative theme color in HSL format (e.g., "30 95% 50%").
   - A list of 2-3 main actors.
 
-  Generate exactly 6 recommendations. Do not use your own knowledge of any specific movie database; generate the information based on your general training data.
+  Generate exactly 6 recommendations based on your general training data.
   `, 
 });
 

@@ -21,29 +21,32 @@ const RecommendationItem = ({ recommendation }: { recommendation: SingleRecommen
     className="border-b"
     style={{ borderLeft: `4px solid hsl(${recommendation.themeColor})` }}
   >
-    <CollapsibleTrigger className="flex w-full items-center justify-between p-3 text-left transition-colors hover:bg-muted/50 [&[data-state=open]>svg]:rotate-90">
+    <CollapsibleTrigger className="flex w-full items-center justify-between p-2 text-left transition-colors hover:bg-muted/50 [&[data-state=open]>svg]:rotate-90">
       <div className="flex-1 pr-4">
         <h3 className="font-headline text-lg font-semibold">{recommendation.title}</h3>
-        <div className="mt-2 flex flex-wrap gap-1.5">
+        <div className="mt-1.5 flex flex-wrap gap-1.5">
           {recommendation.themes?.map((theme, i) => (
             <Badge key={i} variant="secondary" className="capitalize">
               {theme}
             </Badge>
           ))}
         </div>
-        <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
+        <div className="mt-1.5 flex items-center gap-2 text-sm text-muted-foreground">
           <Tv2 className="h-4 w-4 shrink-0" />
           <span>Available on <strong>{recommendation.streamingAvailability}</strong></span>
         </div>
       </div>
       <ChevronRight className="h-5 w-5 shrink-0 transition-transform" />
     </CollapsibleTrigger>
-    <CollapsibleContent className="px-3 pb-3">
-      <div className="border-t pt-3">
-        <p className="text-foreground/80 mb-3 text-sm">{recommendation.description}</p>
-        <p className="text-sm font-medium">
-          Starring: <span className="font-normal text-muted-foreground">{recommendation.mainActors.join(', ')}</span>
-        </p>
+    <CollapsibleContent className="px-2 pb-2">
+      <div className="border-t pt-2">
+        <p className="text-foreground/80 mb-2 text-sm">{recommendation.description}</p>
+
+        {recommendation.mainActors && recommendation.mainActors.length > 0 && (
+          <p className="text-sm font-medium">
+            Starring: <span className="font-normal text-muted-foreground">{recommendation.mainActors.join(', ')}</span>
+          </p>
+        )}
       </div>
     </CollapsibleContent>
   </Collapsible>
