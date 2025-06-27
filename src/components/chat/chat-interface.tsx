@@ -1,15 +1,17 @@
+
 "use client";
 
-import { getAiRecommendation, getMoreMovieInfo, type RecommendationResult } from "@/app/actions";
+import { getMoreMovieInfo, type RecommendationResult } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Send } from "lucide-react";
 import { FormEvent, useEffect, useRef, useState, useCallback } from "react";
 import { ChatMessage, type Message } from "./chat-message";
+import type { GenerateRecommendationOutput } from "@/ai/flows/generate-recommendation";
 
 type ChatInterfaceProps = {
-  getAiRecommendation: (vibe: string) => Promise<RecommendationResult>;
+  getAiRecommendation: (vibe: string, exclude?: string[]) => Promise<RecommendationResult>;
   onNewSearch?: (vibe: string, themes?: string[]) => void;
   searchTrigger?: { term: string, id: number } | null;
 };
@@ -23,6 +25,7 @@ export function ChatInterface({ getAiRecommendation, onNewSearch, searchTrigger 
     },
   ]);
   const [input, setInput] = useState("");
+  const [currentVibe, setCurrentVibe] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -37,6 +40,8 @@ export function ChatInterface({ getAiRecommendation, onNewSearch, searchTrigger 
   const performSearch = useCallback(async (searchTerm: string) => {
     if (!searchTerm.trim() || isLoading) return;
 
+    setCurrentVibe(searchTerm);
+
     const userInput: Message = { id: crypto.randomUUID(), role: "user", content: searchTerm };
     const loadingMessage: Message = { id: crypto.randomUUID(), role: 'bot', content: <div className="flex justify-center items-center p-2"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div> };
 
@@ -44,7 +49,7 @@ export function ChatInterface({ getAiRecommendation, onNewSearch, searchTrigger 
     setInput("");
     setIsLoading(true);
 
-    const result = await getAiRecommendation(searchTerm);
+    const result = await getAiRecommendation(searchTerm, []);
     
     setIsLoading(false);
 
@@ -72,6 +77,48 @@ export function ChatInterface({ getAiRecommendation, onNewSearch, searchTrigger 
     }
   }, [getAiRecommendation, isLoading, onNewSearch, toast]);
 
+  const handleGenerateNewResults = useCallback(async () => {
+    if (!currentVibe || isLoading) return;
+
+    setIsLoading(true);
+    
+    const excludedTitles = messages.reduce((acc: string[], message) => {
+      if (message.role === 'bot' && Array.isArray(message.content)) {
+        const recommendations = message.content as GenerateRecommendationOutput;
+        recommendations.forEach(rec => acc.push(rec.title));
+      }
+      return acc;
+    }, []);
+
+    const loadingMessage: Message = { id: crypto.randomUUID(), role: 'bot', content: <div className="flex justify-center items-center p-2"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div> };
+    setMessages(prev => [...prev, loadingMessage]);
+
+    const result = await getAiRecommendation(currentVibe, excludedTitles);
+    
+    setIsLoading(false);
+
+    if ("error" in result && result.error) {
+      toast({
+        variant: "destructive",
+        title: "Request Failed",
+        description: result.error,
+      });
+      setMessages(prev => prev.slice(0, -1));
+    } else if (!("error" in result)) {
+      const themes = result.flatMap(rec => rec.themes || []);
+      onNewSearch?.(currentVibe, themes);
+      const botResponse: Message = { id: crypto.randomUUID(), role: "bot", content: result };
+      setMessages((prev) => [...prev.slice(0, -1), botResponse]);
+    } else {
+        toast({
+            variant: "destructive",
+            title: "Request Failed",
+            description: "An unexpected error occurred.",
+        });
+        setMessages(prev => prev.slice(0, -1));
+    }
+  }, [currentVibe, isLoading, messages, getAiRecommendation, onNewSearch, toast]);
+
 
   useEffect(() => {
     if (searchTrigger) {
@@ -94,8 +141,10 @@ export function ChatInterface({ getAiRecommendation, onNewSearch, searchTrigger 
           <ChatMessage 
             key={message.id}
             message={message}
+            isGenerating={isLoading}
             onMoreLikeThis={performSearch}
             getMoreInfoAction={getMoreMovieInfo}
+            onNewResults={handleGenerateNewResults}
           />
         ))}
       </div>

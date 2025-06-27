@@ -14,6 +14,7 @@ import {z} from 'genkit';
 
 const GenerateRecommendationInputSchema = z.object({
   vibe: z.string().describe('The desired vibe, mood, genre, or theme of the movie/TV show.'),
+  exclude: z.array(z.string()).optional().describe('A list of movie/TV show titles to exclude from the new recommendations.'),
 });
 
 export type GenerateRecommendationInput = z.infer<typeof GenerateRecommendationInputSchema>;
@@ -56,7 +57,14 @@ const generateRecommendationPrompt = ai.definePrompt({
   - Where the movie/TV show can be watched. Specify if it is available for streaming (e.g., "Stream on Netflix"), or if it needs to be rented or purchased (e.g., "Rent/Buy on Amazon Prime"). Use your training data to provide a likely source. If you cannot determine one, use "Not specified".
   - A representative theme color in HSL format (e.g., "30 95% 50%").
   
-  Generate exactly 6 recommendations based on your general training data.
+  {{#if exclude}}
+  IMPORTANT: Do not include any of the following titles in your response, as they have already been suggested:
+  {{#each exclude}}
+  - {{{this}}}
+  {{/each}}
+  {{/if}}
+
+  Generate exactly 6 new, unique recommendations based on your general training data.
   `, 
 });
 

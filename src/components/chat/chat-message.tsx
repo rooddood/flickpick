@@ -1,3 +1,4 @@
+
 "use client";
 
 import { GenerateRecommendationOutput, GetMoreInfoInput } from "@/ai/flows/generate-recommendation";
@@ -8,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { Bot, ChevronRight, Film, Loader2, Tv2, User } from "lucide-react";
+import { Bot, ChevronRight, Film, Loader2, RefreshCw, Tv2, User } from "lucide-react";
 import React, { useState } from "react";
 
 export type Message = {
@@ -166,11 +167,13 @@ const RecommendationItem = ({ recommendation, onMoreLikeThis, getMoreInfoAction 
 
 type ChatMessageProps = {
   message: Message;
+  isGenerating?: boolean;
   onMoreLikeThis: (searchTerm: string) => void;
   getMoreInfoAction: (input: GetMoreInfoInput) => Promise<MoreInfoResult>;
+  onNewResults?: () => void;
 };
 
-export function ChatMessage({ message, onMoreLikeThis, getMoreInfoAction }: ChatMessageProps) {
+export function ChatMessage({ message, isGenerating, onMoreLikeThis, getMoreInfoAction, onNewResults }: ChatMessageProps) {
   const isBot = message.role === "bot";
   const isRecommendationList = isBot && Array.isArray(message.content);
 
@@ -191,6 +194,14 @@ export function ChatMessage({ message, onMoreLikeThis, getMoreInfoAction }: Chat
                 />
               ))}
             </div>
+            {onNewResults && (
+              <div className="flex justify-center pt-4">
+                <Button variant="outline" onClick={onNewResults} disabled={isGenerating}>
+                  {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
+                  New Results
+                </Button>
+              </div>
+            )}
           </div>
         );
       }
