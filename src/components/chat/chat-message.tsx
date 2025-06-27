@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Bot, Tv2, User } from "lucide-react";
-import Image from "next/image";
+import React from "react";
 
 export type Message = {
   id: string;
@@ -17,7 +17,11 @@ export type Message = {
 type SingleRecommendation = GenerateRecommendationOutput[0];
 
 const RecommendationCard = ({ recommendation }: { recommendation: SingleRecommendation }) => (
-  <AccordionItem value={recommendation.title} className="border-b-0 bg-card rounded-lg shadow-sm border overflow-hidden">
+  <AccordionItem 
+    value={recommendation.title} 
+    className="border-b-0 bg-card rounded-lg shadow-sm border overflow-hidden"
+    style={{ borderLeft: `4px solid hsl(${recommendation.themeColor})` }}
+  >
     <AccordionTrigger className="p-3 w-full text-left hover:no-underline [&>svg]:ml-auto">
       <div className="flex flex-col w-full">
         <h3 className="font-headline text-accent text-base font-semibold leading-tight">
@@ -32,23 +36,11 @@ const RecommendationCard = ({ recommendation }: { recommendation: SingleRecommen
         </div>
       </div>
     </AccordionTrigger>
-    <AccordionContent className="p-0 pt-0">
-      <div className="relative w-full aspect-[2/3]">
-        <Image
-          data-ai-hint={recommendation.aiHint}
-          src={recommendation.imageUrl}
-          alt={`Poster for ${recommendation.title}`}
-          fill
-          className="object-cover"
-          loading="eager"
-        />
-      </div>
-      <div className="p-3">
-        <p className="text-foreground/80 text-sm flex-grow">{recommendation.description}</p>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground font-headline mt-3 pt-3 border-t">
-          <Tv2 className="h-4 w-4 text-accent" />
-          <span>Available on: <strong>{recommendation.streamingAvailability}</strong></span>
-        </div>
+    <AccordionContent className="p-3 pt-2">
+      <p className="text-foreground/80 text-sm mb-3">{recommendation.description}</p>
+      <div className="flex items-center gap-2 text-sm text-muted-foreground font-headline pt-3 border-t">
+        <Tv2 className="h-4 w-4 text-accent" />
+        <span>Available on: <strong>{recommendation.streamingAvailability}</strong></span>
       </div>
     </AccordionContent>
   </AccordionItem>

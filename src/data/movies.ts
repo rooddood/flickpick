@@ -4,8 +4,7 @@ export type Movie = {
   description: string;
   themes: string[];
   streamingAvailability: string;
-  imageUrl: string;
-  aiHint: string;
+  themeColor: string;
 };
 
 export const movies: Movie[] = [
@@ -16,8 +15,7 @@ export const movies: Movie[] = [
       'A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.',
     themes: ['sci-fi', 'heist', 'mind-bending'],
     streamingAvailability: 'Netflix',
-    imageUrl: 'https://placehold.co/200x300.png',
-    aiHint: 'dream city',
+    themeColor: '220 80% 50%',
   },
   {
     id: 2,
@@ -26,8 +24,7 @@ export const movies: Movie[] = [
       'A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.',
     themes: ['sci-fi', 'action', 'dystopian'],
     streamingAvailability: 'HBO Max',
-    imageUrl: 'https://placehold.co/200x300.png',
-    aiHint: 'digital rain',
+    themeColor: '140 80% 40%',
   },
   {
     id: 3,
@@ -36,8 +33,7 @@ export const movies: Movie[] = [
       'Greed and class discrimination threaten the newly formed symbiotic relationship between the wealthy Park family and the destitute Kim clan.',
     themes: ['thriller', 'dark comedy', 'social commentary'],
     streamingAvailability: 'Hulu',
-    imageUrl: 'https://placehold.co/200x300.png',
-    aiHint: 'modern house',
+    themeColor: '120 5% 30%',
   },
   {
     id: 4,
@@ -46,8 +42,7 @@ export const movies: Movie[] = [
       'The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.',
     themes: ['crime', 'drama', 'mafia'],
     streamingAvailability: 'Paramount+',
-    imageUrl: 'https://placehold.co/200x300.png',
-    aiHint: 'vintage tuxedo',
+    themeColor: '15 60% 35%',
   },
   {
     id: 5,
@@ -56,8 +51,7 @@ export const movies: Movie[] = [
       'The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.',
     themes: ['crime', 'nonlinear narrative', 'dark comedy'],
     streamingAvailability: 'HBO Max',
-    imageUrl: 'https://placehold.co/200x300.png',
-    aiHint: 'diner dance',
+    themeColor: '350 80% 50%',
   },
   {
     id: 6,
@@ -66,8 +60,7 @@ export const movies: Movie[] = [
       "During her family's move to the suburbs, a sullen 10-year-old girl wanders into a world ruled by gods, witches, and spirits, and where humans are changed into beasts.",
     themes: ['anime', 'fantasy', 'coming-of-age'],
     streamingAvailability: 'HBO Max',
-    imageUrl: 'https://placehold.co/200x300.png',
-    aiHint: 'spirit world',
+    themeColor: '320 70% 60%',
   },
   {
     id: 7,
@@ -76,8 +69,7 @@ export const movies: Movie[] = [
       "A young Blade Runner's discovery of a long-buried secret leads him to track down former Blade Runner Rick Deckard, who's been missing for 30 years.",
     themes: ['sci-fi', 'neo-noir', 'dystopian'],
     streamingAvailability: 'Netflix',
-    imageUrl: 'https://placehold.co/200x300.png',
-    aiHint: 'futuristic city',
+    themeColor: '25 90% 55%',
   },
   {
     id: 8,
@@ -86,8 +78,7 @@ export const movies: Movie[] = [
       'In a post-apocalyptic wasteland, a woman rebels against a tyrannical ruler in search for her homeland with the help of a group of female prisoners, a psychotic worshiper, and a drifter named Max.',
     themes: ['action', 'post-apocalyptic', 'high-octane'],
     streamingAvailability: 'HBO Max',
-    imageUrl: 'https://placehold.co/200x300.png',
-    aiHint: 'desert chase',
+    themeColor: '30 95% 50%',
   },
   {
     id: 9,
@@ -96,8 +87,7 @@ export const movies: Movie[] = [
       'A detective investigates the death of a patriarch of an eccentric, combative family.',
     themes: ['mystery', 'whodunnit', 'comedy'],
     streamingAvailability: 'Amazon Prime',
-    imageUrl: 'https://placehold.co/200x300.png',
-    aiHint: 'detective mansion',
+    themeColor: '45 30% 50%',
   },
   {
     id: 10,
@@ -106,8 +96,7 @@ export const movies: Movie[] = [
       "Aspiring musician Miguel, confronted with his family's ancestral ban on music, enters the Land of the Dead to find his great-great-grandfather, a legendary singer.",
     themes: ['animation', 'family', 'music'],
     streamingAvailability: 'Disney+',
-    imageUrl: 'https://placehold.co/200x300.png',
-    aiHint: 'day of dead',
+    themeColor: '200 90% 60%',
   },
   {
     id: 11,
@@ -116,8 +105,7 @@ export const movies: Movie[] = [
       "A young African-American visits his white girlfriend's parents for the weekend, where his simmering uneasiness about their reception of him eventually reaches a boiling point.",
     themes: ['horror', 'thriller', 'social commentary'],
     streamingAvailability: 'Hulu',
-    imageUrl: 'https://placehold.co/200x300.png',
-    aiHint: 'hypnotic teacup',
+    themeColor: '0 0% 10%',
   },
   {
     id: 12,
@@ -126,7 +114,6 @@ export const movies: Movie[] = [
       'An aging Chinese immigrant is swept up in an insane adventure, where she alone can save the world by exploring other universes connecting with the lives she could have led.',
     themes: ['sci-fi', 'action', 'absurdist comedy'],
     streamingAvailability: 'Showtime',
-    imageUrl: 'https://placehold.co/200x300.png',
-    aiHint: 'multiverse portal',
+    themeColor: '0 0% 90%',
   },
 ];

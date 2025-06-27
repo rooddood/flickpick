@@ -34,6 +34,7 @@ export default function Home() {
   const [history, setHistory] = useState<string[]>([]);
   const [allSuggestions, setAllSuggestions] = useState<string[]>(defaultSuggestions);
   const [searchTrigger, setSearchTrigger] = useState<{ term: string, id: number } | null>(null);
+  const [displayedSuggestions, setDisplayedSuggestions] = useState<string[]>([]);
 
   useEffect(() => {
     try {
@@ -53,6 +54,12 @@ export default function Home() {
       console.error("Failed to load data from localStorage", error);
     }
   }, []);
+
+  useEffect(() => {
+    // This runs only on the client, after the initial render, to prevent hydration mismatch.
+    const shuffled = [...allSuggestions].sort(() => 0.5 - Math.random());
+    setDisplayedSuggestions(shuffled.slice(0, 5));
+  }, [allSuggestions]);
 
   const handleNewSearch = (searchTerm: string, themes: string[] = []) => {
     const trimmed = searchTerm.trim();
@@ -86,10 +93,6 @@ export default function Home() {
   const handleHistoryClick = (term: string) => {
     setSearchTrigger({ term, id: Date.now() });
   }
-
-  const displayedSuggestions = useMemo(() => {
-    return [...allSuggestions].sort(() => 0.5 - Math.random()).slice(0, 5);
-  }, [allSuggestions]);
 
   return (
     <SidebarProvider>

@@ -27,8 +27,7 @@ const searchMovieDatabase = ai.defineTool(
       description: z.string(),
       themes: z.array(z.string()),
       streamingAvailability: z.string(),
-      imageUrl: z.string(),
-      aiHint: z.string(),
+      themeColor: z.string(),
     })),
   },
   async ({ query }) => {
@@ -48,8 +47,7 @@ const SingleRecommendationSchema = z.object({
   themes: z.array(z.string()).describe('A list of 2-3 main themes or keywords for the movie/TV show.'),
   description: z.string().describe('A brief description of the recommended movie or TV show.'),
   streamingAvailability: z.string().describe('Where the movie/TV show is available for streaming.'),
-  imageUrl: z.string().url().describe('The URL for the movie poster image.'),
-  aiHint: z.string().describe('A hint for AI to generate a relevant placeholder image.'),
+  themeColor: z.string().describe('The HSL theme color for the movie card.'),
 });
 
 const GenerateRecommendationOutputSchema = z.array(SingleRecommendationSchema).max(6).describe("A list of up to 6 movie or TV show recommendations based on the tool's output.");
@@ -75,7 +73,7 @@ const generateRecommendationPrompt = ai.definePrompt({
   1.  First, analyze the user's desired vibe: {{{vibe}}}
   2.  Use the 'searchMovieDatabase' tool with a query derived from the user's vibe to find a list of potentially relevant movies. You must use this tool to get the movie data. Do not use your own knowledge.
   3.  From the search results provided by the tool, select the 6 best matches for the user's vibe.
-  4.  Format your response as a list of selections, using only the 'id' field for each movie. Do not include any other fields like title, description, or imageUrl in your response.
+  4.  Format your response as a list of selections, using only the 'id' field for each movie. Do not include any other fields like title, description, or themeColor in your response.
   `, 
 });
 
@@ -96,6 +94,13 @@ const generateRecommendationFlow = ai.defineFlow(
       return movies.find(movie => movie.id === selection.id);
     }).filter((movie): movie is Movie => movie !== undefined);
     
-    return recommendedMovies;
+    return recommendedMovies.map(movie => ({
+      id: movie.id,
+      title: movie.title,
+      description: movie.description,
+      themes: movie.themes,
+      streamingAvailability: movie.streamingAvailability,
+      themeColor: movie.themeColor,
+    }));
   }
 );
