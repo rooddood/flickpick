@@ -40,6 +40,7 @@ const RecommendationCard = ({ recommendation }: { recommendation: SingleRecommen
           alt={`Poster for ${recommendation.title}`}
           fill
           className="object-cover"
+          loading="eager"
         />
       </div>
       <div className="p-3">
