@@ -1,11 +1,11 @@
 # StreamWise Project Report
 
 ### Project Vision & Core Technology
-For this project, I set out to build StreamWise, an intelligent, conversational web application for discovering movie and TV show recommendations. The initial goal was to accept a user's "vibe" (e.g., "dark comedy with a twist") and return a personalized list. However, the project evolved into a more dynamic discovery tool. The core of the application is powered by Google's Gemini model, integrated using the Genkit framework, allowing for a rich, interactive dialogue with the user.
+For this project, I set out to build StreamWise, an intelligent, conversational web application for discovering movie and TV show recommendations. The initial goal was to accept a user's "vibe" (e.g., "dark comedy with a twist") and return a personalized list. However, the project evolved into a more dynamic discovery tool. The core of the application is powered by Google's Gemini model, integrated using the **Genkit** framework, allowing for a rich, interactive dialogue with the user.
 
 ### Core Features
 *   **Conversational Interface:** A clean, intuitive chat UI (`ChatInterface.tsx`) where users can input their preferences.
-*   **AI-Powered Recommendations:** Utilizes Google's Gemini model via a structured Genkit flow (`generate-recommendation.ts`) to understand user input and generate relevant, well-formatted recommendations.
+*   **AI-Powered Recommendations:** Utilizes Google's Gemini model via a structured **Genkit flow** (`generate-recommendation.ts`) to understand user input and generate relevant, well-formatted recommendations.
 *   **Interactive Recommendation Cards:** Each recommendation is more than static text. It's an interactive component:
     *   **Clear Type Indicator:** A badge with an icon clearly indicates whether the title is a "Movie" or a "TV Show".
     *   **Expandable Details:** The card can be expanded to reveal more details like the director and main actors.
@@ -118,11 +118,19 @@ const generateRecommendationPrompt = ai.definePrompt({
 });
 ```
 
+### AI Infrastructure Explained
+The AI functionality in StreamWise is built on a modern stack designed for reliability and structure:
+1.  **Genkit (The AI Orchestrator):** This project uses Genkit as its core AI framework. It's responsible for managing the AI-powered features.
+    *   **Flows:** In files like `src/ai/flows/generate-recommendation.ts`, I defined Genkit "flows." A flow is a server-side function that orchestrates calls to language models and other tools. It's conceptually similar to a "chain" in other frameworks.
+    *   **Structured Output:** A key advantage of Genkit is its ability to enforce a specific output structure. By defining a Zod schema for the expected output, I can compel the AI to return perfectly formatted JSON every time. This eliminates a major source of errors and makes integrating the AI's response into the UI much more reliable.
+2.  **Google Gemini (The Brain):** Genkit is configured to use Google's Gemini model. This is the advanced LLM that does the heavy lifting of understanding a user's "vibe" and generating creative, relevant recommendations based on its training data.
+3.  **Next.js Server Actions (The Bridge):** Server Actions are the glue between the client-side React components and the server-side AI logic. When a user sends a message, the app calls a Server Action (e.g., `getAiRecommendation`). This function runs securely on the server, invokes the Genkit flow, awaits the response from Gemini, and then returns the structured data to the user's browser to be displayed.
+
 ### Approach
 The development approach was centered on creating a seamless and intelligent user experience by breaking down the problem into three main parts:
 *   **Frontend:** Build a clean, component-based UI using React and ShadCN that is both beautiful and functional.
 *   **Backend:** Use Next.js Server Actions to create a lightweight and secure backend, avoiding the need for a separate API server.
-*   **AI Integration:** Leverage Genkit to define and orchestrate structured AI workflows, ensuring reliable and well-formatted responses from the language model.
+*   **AI Integration:** Leverage **Genkit** to define and orchestrate structured AI workflows, ensuring reliable and well-formatted responses from the language model.
 
 I started by building the core chat functionality and then layered on the more advanced features like history and interactive recommendations, ensuring each piece was working before moving to the next.
 
