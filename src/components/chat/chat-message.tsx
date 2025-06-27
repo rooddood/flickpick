@@ -1,3 +1,4 @@
+
 "use client";
 
 import { GenerateRecommendationOutput } from "@/ai/flows/generate-recommendation";
@@ -16,51 +17,75 @@ export type Message = {
 
 type SingleRecommendation = GenerateRecommendationOutput[0];
 
-const RecommendationItem = ({ recommendation }: { recommendation: SingleRecommendation }) => (
-  <Collapsible
-    className="border-b"
-    style={{ borderLeft: `4px solid hsl(${recommendation.themeColor})` }}
-  >
-    <CollapsibleTrigger className="flex w-full items-center justify-between p-2 text-left transition-colors hover:bg-muted/50 [&[data-state=open]>svg]:rotate-90">
-      <div className="flex-1 pr-4">
-        <div className="flex items-center gap-3">
-          <h3 className="font-headline text-lg font-semibold">{recommendation.title}</h3>
-          {recommendation.type && (
-            <Badge variant="outline" className="shrink-0 flex items-center gap-1 font-normal">
-              {recommendation.type === 'Movie' ? <Film className="h-3.5 w-3.5" /> : <Tv2 className="h-3.5 w-3.5" />}
-              {recommendation.type}
-            </Badge>
-          )}
-        </div>
-        <div className="mt-1.5 flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5">
-          <div className="flex flex-wrap gap-1.5">
+const RecommendationItem = ({ recommendation }: { recommendation: SingleRecommendation }) => {
+  const StreamingInfo = () => {
+    const content = (
+      <>
+        Available on:{" "}
+        <span className="font-normal text-muted-foreground">
+          {recommendation.streamingAvailability}
+        </span>
+      </>
+    );
+
+    if (recommendation.streamingUrl) {
+      return (
+        <a
+          href={recommendation.streamingUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm font-medium hover:underline"
+        >
+          {content}
+        </a>
+      );
+    }
+
+    return <p className="text-sm font-medium">{content}</p>;
+  };
+  
+  return (
+    <Collapsible
+      className="border-b"
+      style={{ borderLeft: `4px solid hsl(${recommendation.themeColor})` }}
+    >
+      <CollapsibleTrigger className="flex w-full items-center justify-between p-2 text-left transition-colors hover:bg-muted/50 [&[data-state=open]>svg]:rotate-90">
+        <div className="flex-1 pr-4">
+          <div className="flex items-center gap-3">
+            <h3 className="font-headline text-lg font-semibold">{recommendation.title}</h3>
+            {recommendation.type && (
+              <Badge variant="outline" className="shrink-0 flex items-center gap-1 font-normal">
+                {recommendation.type === 'Movie' ? <Film className="h-3.5 w-3.5" /> : <Tv2 className="h-3.5 w-3.5" />}
+                {recommendation.type}
+              </Badge>
+            )}
+          </div>
+          <div className="mt-1.5 flex flex-wrap gap-1.5">
             {recommendation.themes?.map((theme, i) => (
               <Badge key={i} variant="secondary" className="capitalize">
                 {theme}
               </Badge>
             ))}
           </div>
-          <div className="flex shrink-0 items-center gap-2 text-sm text-muted-foreground">
-            <Tv2 className="h-4 w-4 shrink-0" />
-            <span>{recommendation.streamingAvailability}</span>
+        </div>
+        <ChevronRight className="h-5 w-5 shrink-0 transition-transform" />
+      </CollapsibleTrigger>
+      <CollapsibleContent className="px-2 pb-2">
+        <div className="border-t pt-2 space-y-2">
+          <p className="text-foreground/80 text-sm">{recommendation.description}</p>
+          <div className="space-y-1">
+            {recommendation.mainActors && recommendation.mainActors.length > 0 && (
+              <p className="text-sm font-medium">
+                Starring: <span className="font-normal text-muted-foreground">{recommendation.mainActors.join(', ')}</span>
+              </p>
+            )}
+            <StreamingInfo />
           </div>
         </div>
-      </div>
-      <ChevronRight className="h-5 w-5 shrink-0 transition-transform" />
-    </CollapsibleTrigger>
-    <CollapsibleContent className="px-2 pb-2">
-      <div className="border-t pt-2">
-        <p className="text-foreground/80 mb-2 text-sm">{recommendation.description}</p>
-
-        {recommendation.mainActors && recommendation.mainActors.length > 0 && (
-          <p className="text-sm font-medium">
-            Starring: <span className="font-normal text-muted-foreground">{recommendation.mainActors.join(', ')}</span>
-          </p>
-        )}
-      </div>
-    </CollapsibleContent>
-  </Collapsible>
-);
+      </CollapsibleContent>
+    </Collapsible>
+  );
+};
 
 
 export function ChatMessage({ message }: { message: Message }) {
