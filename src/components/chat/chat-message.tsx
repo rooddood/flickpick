@@ -118,18 +118,27 @@ const RecommendationItem = ({ recommendation, onMoreLikeThis, getMoreInfoAction,
           <div className="mt-1.5 flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5">
             <div className="flex flex-wrap gap-1.5">
               {recommendation.themes?.map((theme, i) => (
-                <button
+                <div
                   key={i}
+                  role="button"
+                  tabIndex={0}
                   onClick={(e) => {
                     e.stopPropagation();
                     onThemeClick(theme);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onThemeClick(theme);
+                    }
                   }}
                   className="appearance-none p-0 border-0 bg-transparent rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1"
                 >
                   <Badge variant="secondary" className="capitalize cursor-pointer hover:bg-primary/20 transition-colors">
                     {theme}
                   </Badge>
-                </button>
+                </div>
               ))}
             </div>
             <StreamingInfo />
