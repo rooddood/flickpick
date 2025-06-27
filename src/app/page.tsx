@@ -14,8 +14,8 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { History, Lightbulb } from "lucide-react";
-import { useEffect, useState, useMemo } from "react";
+import { History, Lightbulb, RefreshCw, Trash2 } from "lucide-react";
+import { useEffect, useState, useCallback } from "react";
 
 const MAX_HISTORY_LENGTH = 5;
 const HISTORY_STORAGE_KEY = "streamwise_history";
@@ -55,11 +55,16 @@ export default function Home() {
     }
   }, []);
 
-  useEffect(() => {
-    // This runs only on the client, after the initial render, to prevent hydration mismatch.
+  const refreshSuggestions = useCallback(() => {
     const shuffled = [...allSuggestions].sort(() => 0.5 - Math.random());
     setDisplayedSuggestions(shuffled.slice(0, 5));
   }, [allSuggestions]);
+
+
+  useEffect(() => {
+    // This runs only on the client, after the initial render, to prevent hydration mismatch.
+    refreshSuggestions();
+  }, [refreshSuggestions]);
 
   const handleNewSearch = (searchTerm: string, themes: string[] = []) => {
     const trimmed = searchTerm.trim();
@@ -92,7 +97,17 @@ export default function Home() {
 
   const handleHistoryClick = (term: string) => {
     setSearchTrigger({ term, id: Date.now() });
-  }
+  };
+
+  const handleClearHistory = () => {
+    setHistory([]);
+    try {
+      localStorage.removeItem(HISTORY_STORAGE_KEY);
+    } catch (error) {
+      console.error("Failed to clear history from localStorage", error);
+    }
+  };
+
 
   return (
     <SidebarProvider>
@@ -100,7 +115,12 @@ export default function Home() {
         <SidebarContent className="pt-8">
           <SidebarGroup>
             <SidebarGroupLabel className="flex items-center gap-2">
-              <Lightbulb /> Suggestions
+              <Lightbulb className="h-4 w-4" /> 
+              <span>Suggestions</span>
+              <button onClick={refreshSuggestions} title="Refresh suggestions" className="ml-auto p-1 rounded-md hover:bg-sidebar-accent">
+                <RefreshCw className="h-4 w-4" />
+                <span className="sr-only">Refresh suggestions</span>
+              </button>
             </SidebarGroupLabel>
             <SidebarMenu>
               {displayedSuggestions.map((item, index) => (
@@ -115,7 +135,12 @@ export default function Home() {
           {history.length > 0 && (
             <SidebarGroup>
               <SidebarGroupLabel className="flex items-center gap-2">
-                <History /> History
+                <History className="h-4 w-4" /> 
+                <span>History</span>
+                <button onClick={handleClearHistory} title="Clear history" className="ml-auto p-1 rounded-md hover:bg-sidebar-accent">
+                  <Trash2 className="h-4 w-4" />
+                  <span className="sr-only">Clear history</span>
+                </button>
               </SidebarGroupLabel>
               <SidebarMenu>
                 {history.map((item, index) => (
