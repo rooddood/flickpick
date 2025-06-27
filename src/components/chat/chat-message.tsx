@@ -24,7 +24,7 @@ const RecommendationItem = ({ recommendation }: { recommendation: SingleRecommen
     <CollapsibleTrigger className="flex w-full items-center justify-between p-2 text-left transition-colors hover:bg-muted/50 [&[data-state=open]>svg]:rotate-90">
       <div className="flex-1 pr-4">
         <a 
-          href={recommendation.imdbUrl} 
+          href={`https://www.imdb.com/title/${recommendation.imdbId}/`}
           target="_blank" 
           rel="noopener noreferrer" 
           className="inline-flex items-center gap-2 hover:underline"
@@ -43,7 +43,7 @@ const RecommendationItem = ({ recommendation }: { recommendation: SingleRecommen
           </div>
           <div className="flex shrink-0 items-center gap-2 text-sm text-muted-foreground">
             <Tv2 className="h-4 w-4 shrink-0" />
-            <span>Available on <strong>{recommendation.streamingAvailability}</strong></span>
+            <span>{recommendation.streamingAvailability}</span>
           </div>
         </div>
       </div>

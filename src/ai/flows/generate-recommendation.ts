@@ -25,7 +25,7 @@ const SingleRecommendationSchema = z.object({
   streamingAvailability: z.string().describe('Where the movie/TV show can be watched. Specify if it is available for streaming (e.g., "Stream on Netflix"), or if it needs to be rented or purchased (e.g., "Rent/Buy on Amazon Prime"). If unknown, state "Not specified".'),
   themeColor: z.string().describe('A theme color in HSL format (e.g., "220 80% 50%") that represents the mood of the movie.'),
   mainActors: z.array(z.string()).describe('A list of 2-3 main actors in the movie/TV show.'),
-  imdbUrl: z.string().describe('The full URL to the movie or TV show on IMDb (e.g., https://www.imdb.com/title/tt1375666/).'),
+  imdbId: z.string().describe('The IMDb Title ID for the movie or TV show (e.g., "tt1375666" for Inception).'),
 });
 
 const GenerateRecommendationOutputSchema = z.array(SingleRecommendationSchema).max(6).describe("A list of up to 6 movie or TV show recommendations based on the user's vibe.");
@@ -52,7 +52,7 @@ const generateRecommendationPrompt = ai.definePrompt({
   - Where the movie/TV show can be watched. Specify if it is available for streaming (e.g., "Stream on Netflix"), or if it needs to be rented or purchased (e.g., "Rent/Buy on Amazon Prime"). Use your training data to provide a likely source. If you cannot determine one, use "Not specified".
   - A representative theme color in HSL format (e.g., "30 95% 50%").
   - A list of 2-3 main actors.
-  - The full URL to the movie or TV show on IMDb (e.g., https://www.imdb.com/title/tt1375666/).
+  - The IMDb Title ID (e.g., "tt1375666" for Inception).
 
   Generate exactly 6 recommendations based on your general training data.
   `, 
