@@ -25,6 +25,7 @@ const SingleRecommendationSchema = z.object({
   streamingAvailability: z.string().describe('Where the movie/TV show is available for streaming (e.g., Netflix, Hulu, Disney+). If unknown, state "Not specified".'),
   themeColor: z.string().describe('A theme color in HSL format (e.g., "220 80% 50%") that represents the mood of the movie.'),
   mainActors: z.array(z.string()).describe('A list of 2-3 main actors in the movie/TV show.'),
+  imdbUrl: z.string().describe('The full URL to the movie or TV show on IMDb (e.g., https://www.imdb.com/title/tt1375666/).'),
 });
 
 const GenerateRecommendationOutputSchema = z.array(SingleRecommendationSchema).max(6).describe("A list of up to 6 movie or TV show recommendations based on the user's vibe.");
@@ -51,6 +52,7 @@ const generateRecommendationPrompt = ai.definePrompt({
   - The streaming service where it is most likely available (e.g., "Netflix", "Hulu", "Disney+"). Use your training data to provide a likely streaming service. If you cannot determine one, use "Not specified".
   - A representative theme color in HSL format (e.g., "30 95% 50%").
   - A list of 2-3 main actors.
+  - The full URL to the movie or TV show on IMDb (e.g., https://www.imdb.com/title/tt1375666/).
 
   Generate exactly 6 recommendations based on your general training data.
   `, 
