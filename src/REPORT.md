@@ -1,7 +1,7 @@
-# StreamWise Project Report
+# FlickPick Project Report
 
 ### Project Vision & Core Technology
-For this project, I set out to build StreamWise, an intelligent, conversational web application for discovering movie and TV show recommendations. The initial goal was to accept a user's "vibe" (e.g., "dark comedy with a twist") and return a personalized list. However, the project evolved into a more dynamic discovery tool. The core of the application is powered by Google's Gemini model, integrated using the **Genkit** framework, allowing for a rich, interactive dialogue with the user.
+For this project, I set out to build FlickPick, an intelligent, conversational web application for discovering movie and TV show recommendations. The initial goal was to accept a user's "vibe" (e.g., "dark comedy with a twist") and return a personalized list. However, the project evolved into a more dynamic discovery tool. The core of the application is powered by Google's Gemini model, integrated using the **Genkit** framework, allowing for a rich, interactive dialogue with the user.
 
 ### Core Features
 *   **Conversational Interface:** A clean, intuitive chat UI (`ChatInterface.tsx`) where users can input their preferences.
@@ -34,7 +34,7 @@ import { useEffect, useState, useCallback } from "react";
 
 // ... other imports
 const MAX_HISTORY_LENGTH = 5;
-const HISTORY_STORAGE_KEY = "streamwise_history";
+const HISTORY_STORAGE_KEY = "flickpick_history";
 
 
 export default function Home() {
@@ -119,7 +119,7 @@ const generateRecommendationPrompt = ai.definePrompt({
 ```
 
 ### AI Infrastructure Explained
-The AI functionality in StreamWise is built on a modern stack designed for reliability and structure:
+The AI functionality in FlickPick is built on a modern stack designed for reliability and structure:
 1.  **Genkit (The AI Orchestrator):** This project uses Genkit as its core AI framework. It's responsible for managing the AI-powered features.
     *   **Flows:** In files like `src/ai/flows/generate-recommendation.ts`, I defined Genkit "flows." A flow is a server-side function that orchestrates calls to language models and other tools. It's conceptually similar to a "chain" in other frameworks.
     *   **Structured Output:** A key advantage of Genkit is its ability to enforce a specific output structure. By defining a Zod schema for the expected output, I can compel the AI to return perfectly formatted JSON every time. This eliminates a major source of errors and makes integrating the AI's response into the UI much more reliable.
@@ -148,4 +148,4 @@ I started by building the core chat functionality and then layered on the more a
 *   **React Documentation:** Referenced for core concepts like `useState`, `useEffect`, and `useCallback` to manage component state and lifecycle.
 
 ### Future Work
-The current recommendation system relies on the LLM's general knowledge, which is powerful but can be improved. The main opportunity for future work is to implement Retrieval-Augmented Generation (RAG). This would involve creating a searchable vector database of movie/TV show information (using a tool like LlamaIndex with PGVector, as planned in the placeholder `index-movies-tv.ts` flow). By having the AI first search this specific, curated knowledge base, the recommendations would become even more accurate and could be based on a custom, up-to-date catalog. This would be the next logical step in evolving StreamWise into a truly expert recommendation engine.
+The current recommendation system relies on the LLM's general knowledge, which is powerful but can be improved. The main opportunity for future work is to implement Retrieval-Augmented Generation (RAG). This would involve creating a searchable vector database of movie/TV show information (using a tool like LlamaIndex with PGVector, as planned in the placeholder `index-movies-tv.ts` flow). By having the AI first search this specific, curated knowledge base, the recommendations would become even more accurate and could be based on a custom, up-to-date catalog. This would be the next logical step in evolving FlickPick into a truly expert recommendation engine.

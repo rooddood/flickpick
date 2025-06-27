@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
-  title: 'StreamWise',
-  description: 'AI-powered movie and TV show recommendations',
+  title: 'FlickPick',
+  description: 'FlickPick: Your next favorite movie is just a vibe away.',
 };
 
 export default function RootLayout({

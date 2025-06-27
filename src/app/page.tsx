@@ -18,8 +18,8 @@ import { History, Lightbulb, RefreshCw, Trash2 } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
 
 const MAX_HISTORY_LENGTH = 5;
-const HISTORY_STORAGE_KEY = "streamwise_history";
-const THEMES_STORAGE_KEY = "streamwise_themes";
+const HISTORY_STORAGE_KEY = "flickpick_history";
+const THEMES_STORAGE_KEY = "flickpick_themes";
 const MAX_SUGGESTIONS = 20;
 
 const defaultSuggestions = [
@@ -162,10 +162,10 @@ export default function Home() {
             <SidebarTrigger />
             <div>
               <h1 className="text-2xl font-bold font-headline text-primary">
-                StreamWise
+                FlickPick
               </h1>
               <p className="text-sm text-muted-foreground font-headline">
-                AI-powered movie & TV recommendations
+                Your next favorite movie is just a vibe away.
               </p>
             </div>
           </header>
