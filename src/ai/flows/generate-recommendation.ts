@@ -22,7 +22,7 @@ const SingleRecommendationSchema = z.object({
   title: z.string().describe('The title of the recommended movie or TV show.'),
   themes: z.array(z.string()).describe('A list of 2-3 main themes or keywords for the movie/TV show. These should be concise phrases like "sci-fi heist" or "dark comedy", not sentences.'),
   description: z.string().describe('A brief, one-sentence description of the recommended movie or TV show.'),
-  streamingAvailability: z.string().describe('Where the movie/TV show is available for streaming (e.g., Netflix, Hulu, Disney+). If unknown, state "Not specified".'),
+  streamingAvailability: z.string().describe('Where the movie/TV show can be watched. Specify if it is available for streaming (e.g., "Stream on Netflix"), or if it needs to be rented or purchased (e.g., "Rent/Buy on Amazon Prime"). If unknown, state "Not specified".'),
   themeColor: z.string().describe('A theme color in HSL format (e.g., "220 80% 50%") that represents the mood of the movie.'),
   mainActors: z.array(z.string()).describe('A list of 2-3 main actors in the movie/TV show.'),
   imdbUrl: z.string().describe('The full URL to the movie or TV show on IMDb (e.g., https://www.imdb.com/title/tt1375666/).'),
@@ -49,7 +49,7 @@ const generateRecommendationPrompt = ai.definePrompt({
   - A title.
   - A list of 2-3 short, descriptive themes (e.g., "dystopian sci-fi", "courtroom drama").
   - A concise, one-sentence description.
-  - The streaming service where it is most likely available (e.g., "Netflix", "Hulu", "Disney+"). Use your training data to provide a likely streaming service. If you cannot determine one, use "Not specified".
+  - Where the movie/TV show can be watched. Specify if it is available for streaming (e.g., "Stream on Netflix"), or if it needs to be rented or purchased (e.g., "Rent/Buy on Amazon Prime"). Use your training data to provide a likely source. If you cannot determine one, use "Not specified".
   - A representative theme color in HSL format (e.g., "30 95% 50%").
   - A list of 2-3 main actors.
   - The full URL to the movie or TV show on IMDb (e.g., https://www.imdb.com/title/tt1375666/).
