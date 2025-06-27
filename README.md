@@ -6,7 +6,7 @@ FlickPick leverages the power of AI to understand your mood and deliver curated 
 
 ## Running Locally
 
-To run FlickPick on your local machine, you'll need to have Node.js and npm installed. Follow these steps:
+To run FlickPick on your local machine, you'll need to have Node.js and npm installed.
 
 ### 1. Set Up Your Environment
 
