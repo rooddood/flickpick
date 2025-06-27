@@ -10,7 +10,7 @@ import { ChatMessage, type Message } from "./chat-message";
 
 type ChatInterfaceProps = {
   getAiRecommendation: (vibe: string) => Promise<RecommendationResult>;
-  onNewSearch?: (vibe: string) => void;
+  onNewSearch?: (vibe: string, themes?: string[]) => void;
   searchTrigger?: { term: string, id: number } | null;
 };
 
@@ -37,8 +37,6 @@ export function ChatInterface({ getAiRecommendation, onNewSearch, searchTrigger 
   const performSearch = useCallback(async (searchTerm: string) => {
     if (!searchTerm.trim() || isLoading) return;
 
-    onNewSearch?.(searchTerm);
-
     const userInput: Message = { id: crypto.randomUUID(), role: "user", content: searchTerm };
     const loadingMessage: Message = { id: crypto.randomUUID(), role: 'bot', content: <div className="flex justify-center items-center p-2"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div> };
 
@@ -57,7 +55,10 @@ export function ChatInterface({ getAiRecommendation, onNewSearch, searchTrigger 
         description: result.error,
       });
       setMessages(prev => prev.slice(0, -1));
+      onNewSearch?.(searchTerm, []);
     } else if (!("error" in result)) {
+      const themes = result.flatMap(rec => rec.themes || []);
+      onNewSearch?.(searchTerm, themes);
       const botResponse: Message = { id: crypto.randomUUID(), role: "bot", content: result };
       setMessages((prev) => [...prev.slice(0, -1), botResponse]);
     } else {
@@ -67,6 +68,7 @@ export function ChatInterface({ getAiRecommendation, onNewSearch, searchTrigger 
             description: "An unexpected error occurred.",
         });
         setMessages(prev => prev.slice(0, -1));
+        onNewSearch?.(searchTerm, []);
     }
   }, [getAiRecommendation, isLoading, onNewSearch, toast]);
 

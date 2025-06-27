@@ -15,79 +15,78 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { History, Lightbulb } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 const MAX_HISTORY_LENGTH = 10;
-const STORAGE_KEY = "streamwise_history";
+const HISTORY_STORAGE_KEY = "streamwise_history";
+const THEMES_STORAGE_KEY = "streamwise_themes";
+const MAX_SUGGESTIONS = 20;
 
 export default function Home() {
   const [history, setHistory] = useState<string[]>([]);
-  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [allSuggestions, setAllSuggestions] = useState<string[]>([]);
   const [searchTrigger, setSearchTrigger] = useState<{ term: string, id: number } | null>(null);
 
   useEffect(() => {
     try {
-      const storedHistory = localStorage.getItem(STORAGE_KEY);
+      const storedHistory = localStorage.getItem(HISTORY_STORAGE_KEY);
       if (storedHistory) {
         setHistory(JSON.parse(storedHistory));
       }
+      
+      const storedThemes = localStorage.getItem(THEMES_STORAGE_KEY);
+      if (storedThemes && JSON.parse(storedThemes).length > 0) {
+        setAllSuggestions(JSON.parse(storedThemes));
+      } else {
+        setAllSuggestions([
+          "classic film noir",
+          "mind-bending sci-fi",
+          "family comedy",
+          "space documentary",
+          "tense courtroom drama",
+        ]);
+      }
     } catch (error) {
-      console.error("Failed to load history from localStorage", error);
+      console.error("Failed to load data from localStorage", error);
     }
   }, []);
 
-  useEffect(() => {
-    const defaultSuggestions = [
-        "classic film noir",
-        "mind-bending sci-fi",
-        "family comedy",
-        "space documentary",
-        "tense courtroom drama",
-    ];
-
-    if (history.length > 0) {
-      const uniqueWords = new Set<string>();
-      const stopWords = new Set(['a', 'an', 'the', 'movie', 'about', 'with', 'that', 'show', 'for', 'is', 'in', 'and', 'tv', 'esque', 'does', 'like']);
-      history.forEach(item => {
-        item.split(' ').forEach(word => {
-          const cleanWord = word.replace(/[^a-zA-Z]/g, '').toLowerCase();
-          if (cleanWord.length > 2 && !stopWords.has(cleanWord)) {
-            uniqueWords.add(cleanWord);
-          }
-        });
-      });
-      
-      const shuffled = Array.from(uniqueWords).sort(() => 0.5 - Math.random());
-      const newSuggestions = shuffled.slice(0, 5);
-
-      if (newSuggestions.length > 0) {
-        setSuggestions(newSuggestions);
-      } else {
-        // As a fallback, show shuffled default suggestions so the list doesn't disappear
-        setSuggestions(defaultSuggestions.sort(() => 0.5 - Math.random()).slice(0, 5));
-      }
-    } else {
-        setSuggestions(defaultSuggestions);
-    }
-  }, [history]);
-
-  const handleNewSearch = (searchTerm: string) => {
+  const handleNewSearch = (searchTerm: string, themes: string[] = []) => {
     const trimmed = searchTerm.trim();
     if (!trimmed) return;
+    
     setHistory((prevHistory) => {
       const newHistory = [trimmed, ...prevHistory.filter(item => item.toLowerCase() !== trimmed.toLowerCase())].slice(0, MAX_HISTORY_LENGTH);
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(newHistory));
+        localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(newHistory));
       } catch (error) {
         console.error("Failed to save history to localStorage", error);
       }
       return newHistory;
     });
+
+    if (themes.length > 0) {
+      setAllSuggestions((prevSuggestions) => {
+        const combined = [...themes, ...prevSuggestions];
+        const unique = [...new Set(combined.map(s => s.toLowerCase()))];
+        const newSuggestions = unique.slice(0, MAX_SUGGESTIONS);
+        try {
+          localStorage.setItem(THEMES_STORAGE_KEY, JSON.stringify(newSuggestions));
+        } catch (error) {
+          console.error("Failed to save suggestions to localStorage", error);
+        }
+        return newSuggestions;
+      });
+    }
   };
 
   const handleHistoryClick = (term: string) => {
     setSearchTrigger({ term, id: Date.now() });
   }
+
+  const displayedSuggestions = useMemo(() => {
+    return [...allSuggestions].sort(() => 0.5 - Math.random()).slice(0, 5);
+  }, [allSuggestions]);
 
   return (
     <SidebarProvider>
@@ -98,7 +97,7 @@ export default function Home() {
               <Lightbulb /> Suggestions
             </SidebarGroupLabel>
             <SidebarMenu>
-              {suggestions.map((item, index) => (
+              {displayedSuggestions.map((item, index) => (
                 <SidebarMenuItem key={`sugg-${index}`}>
                   <SidebarMenuButton onClick={() => handleHistoryClick(item)} className="w-full justify-start text-left h-auto p-2 capitalize">
                     {item}
