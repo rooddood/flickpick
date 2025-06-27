@@ -1,6 +1,6 @@
 "use client";
 
-import { type RecommendationResult } from "@/app/actions";
+import { getAiRecommendation, getMoreMovieInfo, type RecommendationResult } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -91,7 +91,12 @@ export function ChatInterface({ getAiRecommendation, onNewSearch, searchTrigger 
     <div className="flex flex-col h-full w-full bg-card border rounded-lg shadow-lg">
       <div ref={chatContainerRef} className="flex-1 p-4 md:p-6 space-y-6 overflow-y-auto">
         {messages.map((message) => (
-          <ChatMessage key={message.id} message={message} />
+          <ChatMessage 
+            key={message.id}
+            message={message}
+            onMoreLikeThis={performSearch}
+            getMoreInfoAction={getMoreMovieInfo}
+          />
         ))}
       </div>
       <div className="border-t p-4 bg-background/50">

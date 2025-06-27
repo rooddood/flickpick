@@ -1,13 +1,15 @@
-
 "use client";
 
-import { GenerateRecommendationOutput } from "@/ai/flows/generate-recommendation";
+import { GenerateRecommendationOutput, GetMoreInfoInput } from "@/ai/flows/generate-recommendation";
+import { MoreInfoResult } from "@/app/actions";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { Bot, ChevronRight, Film, Tv2, User } from "lucide-react";
-import React from "react";
+import { Bot, ChevronRight, Film, Loader2, Tv2, User } from "lucide-react";
+import React, { useState } from "react";
 
 export type Message = {
   id: string;
@@ -30,15 +32,48 @@ const STREAMING_SITES: { [key: string]: string } = {
   'Peacock': 'https://www.peacocktv.com',
 };
 
+type RecommendationItemProps = {
+  recommendation: SingleRecommendation;
+  onMoreLikeThis: (searchTerm: string) => void;
+  getMoreInfoAction: (input: GetMoreInfoInput) => Promise<MoreInfoResult>;
+};
 
-const RecommendationItem = ({ recommendation }: { recommendation: SingleRecommendation }) => {
+const RecommendationItem = ({ recommendation, onMoreLikeThis, getMoreInfoAction }: RecommendationItemProps) => {
+  const [moreInfo, setMoreInfo] = useState<MoreInfoResult | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
+  const handleMoreInfoClick = async () => {
+    if (moreInfo) {
+      return;
+    }
+    setIsLoading(true);
+    const result = await getMoreInfoAction({
+      title: recommendation.title,
+      director: recommendation.director,
+    });
+    setIsLoading(false);
+
+    if (result && "error" in result) {
+      toast({
+        variant: "destructive",
+        title: "Could not fetch details",
+        description: result.error,
+      });
+    } else {
+      setMoreInfo(result);
+    }
+  };
+
+  const handleMoreLikeThisClick = () => {
+    onMoreLikeThis(`More movies and TV shows like ${recommendation.title}`);
+  };
+  
   const StreamingInfo = () => {
-    // Extract service name from a string like "Stream on Netflix" or "Rent/Buy on Amazon Prime"
     const serviceName = recommendation.streamingAvailability
       .replace('Stream on ', '')
       .replace('Rent/Buy on ', '');
     
-    // Find a matching site from our map
     const siteKey = Object.keys(STREAMING_SITES).find(key => serviceName.includes(key));
     const siteUrl = siteKey ? STREAMING_SITES[siteKey] : null;
 
@@ -106,14 +141,36 @@ const RecommendationItem = ({ recommendation }: { recommendation: SingleRecommen
               </p>
             )}
           </div>
+          <div className="flex items-center gap-2 pt-2">
+            <Button size="sm" variant="outline" onClick={handleMoreLikeThisClick}>More like this</Button>
+            <Button size="sm" variant="outline" onClick={handleMoreInfoClick} disabled={isLoading || !!moreInfo}>
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              More info
+            </Button>
+          </div>
+          {moreInfo && !('error' in moreInfo) && (
+            <div className="mt-2 pt-2 border-t space-y-2 text-sm">
+                <h4 className="font-semibold mt-2">Synopsis</h4>
+                <p className="text-muted-foreground whitespace-pre-wrap">{moreInfo.detailedSynopsis}</p>
+                <h4 className="font-semibold mt-2">Trivia</h4>
+                <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+                    {moreInfo.trivia.map((fact, i) => <li key={i}>{fact}</li>)}
+                </ul>
+            </div>
+          )}
         </div>
       </CollapsibleContent>
     </Collapsible>
   );
 };
 
+type ChatMessageProps = {
+  message: Message;
+  onMoreLikeThis: (searchTerm: string) => void;
+  getMoreInfoAction: (input: GetMoreInfoInput) => Promise<MoreInfoResult>;
+};
 
-export function ChatMessage({ message }: { message: Message }) {
+export function ChatMessage({ message, onMoreLikeThis, getMoreInfoAction }: ChatMessageProps) {
   const isBot = message.role === "bot";
   const isRecommendationList = isBot && Array.isArray(message.content);
 
@@ -126,20 +183,23 @@ export function ChatMessage({ message }: { message: Message }) {
             <p className="text-muted-foreground mb-1 px-1">Here are a few ideas for you:</p>
             <div className="overflow-hidden rounded-lg border bg-card shadow-sm">
               {recommendations.map((rec, index) => (
-                <RecommendationItem key={index} recommendation={rec} />
+                <RecommendationItem 
+                  key={index} 
+                  recommendation={rec}
+                  onMoreLikeThis={onMoreLikeThis}
+                  getMoreInfoAction={getMoreInfoAction}
+                />
               ))}
             </div>
           </div>
         );
       }
-      // Fallback for when the AI returns an empty list
       return (
         <div className="rounded-lg bg-muted px-4 py-3">
           <p>I couldn't find any recommendations that fit that vibe. Could you try being a bit more descriptive or try a different search?</p>
         </div>
       );
     }
-    // For regular text messages and loading indicators
     return <div className="text-inherit whitespace-pre-wrap">{message.content}</div>;
   };
 
