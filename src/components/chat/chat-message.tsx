@@ -17,8 +17,31 @@ export type Message = {
 
 type SingleRecommendation = GenerateRecommendationOutput[0];
 
+const STREAMING_SITES: { [key: string]: string } = {
+  'Netflix': 'https://www.netflix.com',
+  'Amazon Prime': 'https://www.primevideo.com',
+  'Hulu': 'https://www.hulu.com',
+  'Disney+': 'https://www.disneyplus.com',
+  'HBO Max': 'https://www.max.com',
+  'Max': 'https://www.max.com',
+  'Apple TV+': 'https://tv.apple.com',
+  'Paramount+': 'https://www.paramountplus.com',
+  'Showtime': 'https://www.paramountplus.com/shows/showtime/',
+  'Peacock': 'https://www.peacocktv.com',
+};
+
+
 const RecommendationItem = ({ recommendation }: { recommendation: SingleRecommendation }) => {
   const StreamingInfo = () => {
+    // Extract service name from a string like "Stream on Netflix" or "Rent/Buy on Amazon Prime"
+    const serviceName = recommendation.streamingAvailability
+      .replace('Stream on ', '')
+      .replace('Rent/Buy on ', '');
+    
+    // Find a matching site from our map
+    const siteKey = Object.keys(STREAMING_SITES).find(key => serviceName.includes(key));
+    const siteUrl = siteKey ? STREAMING_SITES[siteKey] : null;
+
     const content = (
       <>
         Available on:{" "}
@@ -28,10 +51,10 @@ const RecommendationItem = ({ recommendation }: { recommendation: SingleRecommen
       </>
     );
 
-    if (recommendation.streamingUrl) {
+    if (siteUrl) {
       return (
         <a
-          href={recommendation.streamingUrl}
+          href={siteUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="text-sm font-medium hover:underline"
@@ -74,6 +97,11 @@ const RecommendationItem = ({ recommendation }: { recommendation: SingleRecommen
         <div className="border-t pt-2 space-y-2">
           <p className="text-foreground/80 text-sm">{recommendation.description}</p>
           <div className="space-y-1">
+            {recommendation.director && (
+                <p className="text-sm font-medium">
+                    Director: <span className="font-normal text-muted-foreground">{recommendation.director}</span>
+                </p>
+            )}
             {recommendation.mainActors && recommendation.mainActors.length > 0 && (
               <p className="text-sm font-medium">
                 Starring: <span className="font-normal text-muted-foreground">{recommendation.mainActors.join(', ')}</span>

@@ -24,9 +24,9 @@ const SingleRecommendationSchema = z.object({
   themes: z.array(z.string()).describe('A list of 2-3 main themes or keywords for the movie/TV show. These should be concise phrases like "sci-fi heist" or "dark comedy", not sentences.'),
   description: z.string().describe('A brief, one-sentence description of the recommended movie or TV show.'),
   streamingAvailability: z.string().describe('Where the movie/TV show can be watched. Specify if it is available for streaming (e.g., "Stream on Netflix"), or if it needs to be rented or purchased (e.g., "Rent/Buy on Amazon Prime"). If unknown, state "Not specified".'),
-  streamingUrl: z.string().url().optional().describe("A direct URL to the movie/show on the specified streaming service. Omit if it's for rent/buy or if a direct link isn't available."),
   themeColor: z.string().describe('A theme color in HSL format (e.g., "220 80% 50%") that represents the mood of the movie.'),
   mainActors: z.array(z.string()).describe('A list of 2-3 main actors in the movie/TV show.'),
+  director: z.string().describe('The director of the movie or TV show.'),
 });
 
 const GenerateRecommendationOutputSchema = z.array(SingleRecommendationSchema).max(6).describe("A list of up to 6 movie or TV show recommendations based on the user's vibe.");
@@ -51,10 +51,10 @@ const generateRecommendationPrompt = ai.definePrompt({
   - The type of content: either "Movie" or "TV Show".
   - A list of 2-3 short, descriptive themes (e.g., "dystopian sci-fi", "courtroom drama").
   - A concise, one-sentence description.
-  - Where the movie/TV show can be watched. Specify if it is available for streaming (e.g., "Stream on Netflix"), or if it needs to be rented or purchased (e.g., "Rent/Buy on Amazon Prime"). Use your training data to provide a likely source. If you cannot determine one, use "Not specified".
-  - A direct URL to the streaming service page for the movie/show, if one is known to exist ('streamingUrl'). If a direct link isn't available, or it's for rent/buy, you can omit the 'streamingUrl' field.
-  - A representative theme color in HSL format (e.g., "30 95% 50%").
+  - The director of the movie or show.
   - A list of 2-3 main actors.
+  - Where the movie/TV show can be watched. Specify if it is available for streaming (e.g., "Stream on Netflix"), or if it needs to be rented or purchased (e.g., "Rent/Buy on Amazon Prime"). Use your training data to provide a likely source. If you cannot determine one, use "Not specified".
+  - A representative theme color in HSL format (e.g., "30 95% 50%").
   
   Generate exactly 6 recommendations based on your general training data.
   `, 
