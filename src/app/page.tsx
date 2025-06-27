@@ -47,7 +47,7 @@ export default function Home() {
 
     if (history.length > 0) {
       const uniqueWords = new Set<string>();
-      const stopWords = new Set(['a', 'an', 'the', 'movie', 'about', 'with', 'that', 'show', 'for', 'is', 'in', 'and', 'tv']);
+      const stopWords = new Set(['a', 'an', 'the', 'movie', 'about', 'with', 'that', 'show', 'for', 'is', 'in', 'and', 'tv', 'esque', 'does', 'like']);
       history.forEach(item => {
         item.split(' ').forEach(word => {
           const cleanWord = word.replace(/[^a-zA-Z]/g, '').toLowerCase();
@@ -140,7 +140,7 @@ export default function Home() {
             </div>
           </header>
           <main className="flex-1 overflow-hidden">
-            <div className="h-full max-w-4xl mx-auto flex flex-col p-0 sm:p-4">
+            <div className="h-full max-w-6xl mx-auto flex flex-col p-0 sm:p-4">
               <ChatInterface 
                 getAiRecommendation={getAiRecommendation} 
                 onNewSearch={handleNewSearch}

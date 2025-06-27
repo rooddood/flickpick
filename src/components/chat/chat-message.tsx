@@ -1,7 +1,6 @@
 "use client";
 
 import { GenerateRecommendationOutput } from "@/ai/flows/generate-recommendation";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -18,47 +17,34 @@ export type Message = {
 type SingleRecommendation = GenerateRecommendationOutput[0];
 
 const RecommendationCard = ({ recommendation }: { recommendation: SingleRecommendation }) => (
-  <Accordion type="single" collapsible className="w-full">
-    <AccordionItem value="item-1" className="border-b-0">
-      <Card className="bg-card border shadow-sm text-card-foreground overflow-hidden">
-        <AccordionTrigger className="p-2 text-left w-full hover:no-underline [&>svg]:ml-2">
-          <div className="flex items-start gap-2 w-full">
-            <div className="flex-shrink-0">
-              <Image
-                data-ai-hint="movie poster"
-                src={`https://placehold.co/60x90.png`}
-                alt={`Poster for ${recommendation.title}`}
-                width={60}
-                height={90}
-                className="rounded-md object-cover"
-              />
-            </div>
-            <div className="flex-1 text-left">
-              <h3 className="font-headline text-accent text-base font-semibold">
-                {recommendation.title}
-              </h3>
-              <div className="flex flex-wrap gap-1.5 mt-2">
-                {recommendation.themes?.map((theme, i) => (
-                  <Badge key={i} variant="secondary" className="font-normal capitalize text-xs px-1.5 py-0.5">
-                    {theme}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          </div>
-        </AccordionTrigger>
-        <AccordionContent className="px-2 pb-2">
-          <div className="border-t pt-2">
-            <p className="text-foreground/80 text-sm mb-2">{recommendation.description}</p>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground font-headline">
-              <Tv2 className="h-4 w-4 text-accent" />
-              <span>Available on: <strong>{recommendation.streamingAvailability}</strong></span>
-            </div>
-          </div>
-        </AccordionContent>
-      </Card>
-    </AccordionItem>
-  </Accordion>
+  <Card className="bg-card border shadow-sm text-card-foreground overflow-hidden flex flex-col">
+    <div className="relative w-full aspect-[2/3]">
+      <Image
+        data-ai-hint="movie poster"
+        src={`https://placehold.co/200x300.png`}
+        alt={`Poster for ${recommendation.title}`}
+        fill
+        className="rounded-t-md object-cover"
+      />
+    </div>
+    <div className="p-3 flex flex-col flex-grow">
+      <h3 className="font-headline text-accent text-base font-semibold leading-tight">
+        {recommendation.title}
+      </h3>
+      <div className="flex flex-wrap gap-1.5 mt-2">
+        {recommendation.themes?.map((theme, i) => (
+          <Badge key={i} variant="secondary" className="font-normal capitalize text-xs px-1.5 py-0.5">
+            {theme}
+          </Badge>
+        ))}
+      </div>
+      <p className="text-foreground/80 text-sm mt-3 flex-grow">{recommendation.description}</p>
+      <div className="flex items-center gap-2 text-sm text-muted-foreground font-headline mt-3 pt-3 border-t">
+        <Tv2 className="h-4 w-4 text-accent" />
+        <span>Available on: <strong>{recommendation.streamingAvailability}</strong></span>
+      </div>
+    </div>
+  </Card>
 );
 
 export function ChatMessage({ message }: { message: Message }) {
@@ -76,14 +62,14 @@ export function ChatMessage({ message }: { message: Message }) {
       )}
       <div
         className={cn(
-          "max-w-xl w-full rounded-lg",
+          "max-w-full w-full rounded-lg", // Changed max-w-xl to max-w-full
           isBot ? (isRecommendationList ? 'bg-transparent' : 'bg-muted px-4 py-3') : "bg-primary text-primary-foreground px-4 py-3"
         )}
       >
         {isRecommendationList ? (
           <div className="flex flex-col gap-3">
              <p className="text-muted-foreground mb-1">Here are a few ideas for you:</p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {(message.content as GenerateRecommendationOutput).map((rec, index) => (
                   <RecommendationCard key={index} recommendation={rec} />
                 ))}
