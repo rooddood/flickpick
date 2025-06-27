@@ -2,7 +2,7 @@
 'use server';
 
 /**
- * @fileOverview A movie/TV show recommendation AI agent that generates personalized recommendations by searching a movie database.
+ * @fileOverview A movie/TV show recommendation AI agent that generates personalized recommendations.
  *
  * - generateRecommendation - A function that handles the recommendation generation process.
  * - GenerateRecommendationInput - The input type for the generateRecommendation function.
@@ -11,31 +11,6 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import { searchMovies } from '@/services/movie-service';
-import { movies, type Movie } from '@/data/movies';
-
-const searchMovieDatabase = ai.defineTool(
-  {
-    name: 'searchMovieDatabase',
-    description: 'Search the movie database to find movies that match a user query or vibe. Returns a list of movies with their details.',
-    inputSchema: z.object({
-      query: z.string().describe('The search query, like a genre, theme, actor, or a general vibe.'),
-    }),
-    outputSchema: z.array(z.object({
-      id: z.number(),
-      title: z.string(),
-      description: z.string(),
-      themes: z.array(z.string()),
-      streamingAvailability: z.string(),
-      themeColor: z.string(),
-      mainActors: z.array(z.string()),
-    })),
-  },
-  async ({ query }) => {
-    return searchMovies(query);
-  }
-);
-
 
 const GenerateRecommendationInputSchema = z.object({
   vibe: z.string().describe('The desired vibe, mood, genre, or theme of the movie/TV show.'),
@@ -45,20 +20,16 @@ export type GenerateRecommendationInput = z.infer<typeof GenerateRecommendationI
 
 const SingleRecommendationSchema = z.object({
   title: z.string().describe('The title of the recommended movie or TV show.'),
-  themes: z.array(z.string()).describe('A list of 2-3 main themes or keywords for the movie/TV show.'),
-  description: z.string().describe('A brief description of the recommended movie or TV show.'),
-  streamingAvailability: z.string().describe('Where the movie/TV show is available for streaming.'),
-  themeColor: z.string().describe('The HSL theme color for the movie card.'),
-  mainActors: z.array(z.string()).describe('A list of the main actors in the movie/TV show.'),
+  themes: z.array(z.string()).describe('A list of 2-3 main themes or keywords for the movie/TV show. These should be concise phrases like "sci-fi heist" or "dark comedy", not sentences.'),
+  description: z.string().describe('A brief, one-sentence description of the recommended movie or TV show.'),
+  streamingAvailability: z.string().describe('Where the movie/TV show is available for streaming (e.g., Netflix, Hulu, Disney+). If unknown, state "Not specified".'),
+  themeColor: z.string().describe('A theme color in HSL format (e.g., "220 80% 50%") that represents the mood of the movie.'),
+  mainActors: z.array(z.string()).describe('A list of 2-3 main actors in the movie/TV show.'),
 });
 
-const GenerateRecommendationOutputSchema = z.array(SingleRecommendationSchema).max(6).describe("A list of up to 6 movie or TV show recommendations based on the tool's output.");
+const GenerateRecommendationOutputSchema = z.array(SingleRecommendationSchema).max(6).describe("A list of up to 6 movie or TV show recommendations based on the user's vibe.");
 
 export type GenerateRecommendationOutput = z.infer<typeof GenerateRecommendationOutputSchema>;
-
-const LLMSelectionSchema = z.array(z.object({
-    id: z.number().describe("The numeric ID of the movie selected from the tool's search results."),
-})).max(6).describe("An array of up to 6 movie selections, identified only by their ID.");
 
 
 export async function generateRecommendation(input: GenerateRecommendationInput): Promise<GenerateRecommendationOutput> {
@@ -67,15 +38,21 @@ export async function generateRecommendation(input: GenerateRecommendationInput)
 
 const generateRecommendationPrompt = ai.definePrompt({
   name: 'generateRecommendationPrompt',
-  tools: [searchMovieDatabase],
   input: {schema: GenerateRecommendationInputSchema},
-  output: {schema: LLMSelectionSchema},
-  prompt: `You are a movie and TV show recommendation expert. Your goal is to provide up to 6 recommendations based on the user's desired vibe.
+  output: {schema: GenerateRecommendationOutputSchema},
+  prompt: `You are a movie and TV show recommendation expert. Your goal is to provide exactly 6 recommendations based on the user's desired vibe.
 
-  1.  First, analyze the user's desired vibe: {{{vibe}}}
-  2.  Use the 'searchMovieDatabase' tool with a query derived from the user's vibe to find a list of potentially relevant movies. You must use this tool to get the movie data. Do not use your own knowledge.
-  3.  From the search results provided by the tool, select the 6 best matches for the user's vibe.
-  4.  Format your response as a list of selections, using only the 'id' field for each movie. Do not include any other fields like title, description, or themeColor in your response.
+  Analyze the user's desired vibe: {{{vibe}}}
+
+  For each recommendation, you MUST provide:
+  - A title.
+  - A list of 2-3 short, descriptive themes (e.g., "dystopian sci-fi", "courtroom drama").
+  - A concise, one-sentence description.
+  - The streaming service where it's available (e.g., "Netflix", "Hulu"). If you don't know, say "Not specified".
+  - A representative theme color in HSL format (e.g., "30 95% 50%").
+  - A list of 2-3 main actors.
+
+  Generate exactly 6 recommendations. Do not use your own knowledge of any specific movie database; generate the information based on your general training data.
   `, 
 });
 
@@ -86,24 +63,7 @@ const generateRecommendationFlow = ai.defineFlow(
     outputSchema: GenerateRecommendationOutputSchema,
   },
   async input => {
-    const {output: llmOutput} = await generateRecommendationPrompt(input);
-    
-    if (!llmOutput) {
-      return [];
-    }
-    
-    const recommendedMovies = llmOutput.map(selection => {
-      return movies.find(movie => movie.id === selection.id);
-    }).filter((movie): movie is Movie => movie !== undefined);
-    
-    return recommendedMovies.map(movie => ({
-      id: movie.id,
-      title: movie.title,
-      description: movie.description,
-      themes: movie.themes,
-      streamingAvailability: movie.streamingAvailability,
-      themeColor: movie.themeColor,
-      mainActors: movie.mainActors,
-    }));
+    const {output} = await generateRecommendationPrompt(input);
+    return output || [];
   }
 );
